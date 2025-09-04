@@ -36,7 +36,7 @@ def delete_product(product_id):
     db = abrirConexion()
     cursor = db.cursor()
     
-    cursor.execute("DELETE FROM products WHERE id = %s;", (product_id,))
+    cursor.execute("DELETE FROM products WHERE products_id = %s;", (product_id,))
     db.commit()  # 🔹 importante para que el DELETE se aplique
     
     deleted = cursor.rowcount
