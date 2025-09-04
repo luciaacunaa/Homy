@@ -22,7 +22,7 @@ def cerrarConexion(e=None):
 app = Flask(__name__)
 app.teardown_appcontext(cerrarConexion)
 
-@app.route('/api/products', methods=['GET'])
+@app.route('/api/products', methods=['GET']) 
 def list_products():
     db = abrirConexion()
     cursor = db.cursor(dictionary=True)
@@ -30,3 +30,19 @@ def list_products():
     products = cursor.fetchall()
     cursor.close()
     return jsonify(products)
+
+@app.route('/api/products/<int:product_id>', methods=['DELETE'])
+def delete_product(product_id):
+    db = abrirConexion()
+    cursor = db.cursor()
+    
+    cursor.execute("DELETE FROM products WHERE id = %s;", (product_id,))
+    db.commit()  # 🔹 importante para que el DELETE se aplique
+    
+    deleted = cursor.rowcount
+    cursor.close()
+    
+    if deleted == 0:
+        return jsonify({'message': f'Producto {product_id} no encontrado'}), 404
+    else:
+        return jsonify({'message': f'Producto {product_id} eliminado'})
