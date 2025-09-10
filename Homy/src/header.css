@@ -1,0 +1,40 @@
+/* Header.css  */
+
+body{background-color: #fffbeb;}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #48601c;
+  box-shadow: 0 2px 5px #44522b;
+}
+
+.header-left,
+.header-center,
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-center h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.header-left span {
+  font-size: 1rem;
+}
+
+.header-right svg {
+  cursor: pointer;
+  color: #333;
+  transition: color 0.2s;
+}
+
+.header-right svg:hover {
+  color: #fd4b4b;
+}
