@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import "./login.css"; // Importamos el CSS
 
+
+//login component
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
