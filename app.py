@@ -1,17 +1,16 @@
-from flask import Flask
+from flask import Flask, g, jsonify
 import mysql.connector
-from flask import Flask, g, request, jsonify
-
+from flask_cors import CORS  # Importa flask-cors
 
 def abrirConexion():
     if 'db' not in g:
         g.db = mysql.connector.connect(
-    host="10.9.120.5",     # ip del serv
-    port=3306,            # puerto (3306 por defecto)
-    user="homy",    # php
-    password="homy1234", 
-    database="homy" )
-        
+            host="10.9.120.5",     # IP del servidor
+            port=3306,             # Puerto (3306 por defecto)
+            user="homy",           # Usuario
+            password="homy1234",   # Contraseña
+            database="homy"        # Base de datos
+        )
     return g.db
 
 def cerrarConexion(e=None):
@@ -20,9 +19,12 @@ def cerrarConexion(e=None):
         db.close()
 
 app = Flask(__name__)
+
+CORS(app)  # Habilita CORS para todas las rutas de todos los orígenes
+
 app.teardown_appcontext(cerrarConexion)
 
-@app.route('/api/products', methods=['GET']) 
+@app.route('/api/products', methods=['GET'])
 def list_products():
     db = abrirConexion()
     cursor = db.cursor(dictionary=True)
@@ -46,3 +48,6 @@ def delete_product(product_id):
         return jsonify({'message': f'Producto {product_id} no encontrado'}), 404
     else:
         return jsonify({'message': f'Producto {product_id} eliminado'})
+
+if __name__ == '__main__':
+    app.run(debug=True)
