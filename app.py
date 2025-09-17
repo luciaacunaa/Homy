@@ -1,6 +1,7 @@
 from flask import Flask
 import mysql.connector
 from flask import Flask, g, request, jsonify
+from flask_cors import CORS 
 
 
 def abrirConexion():
@@ -21,6 +22,7 @@ def cerrarConexion(e=None):
 
 app = Flask(__name__)
 app.teardown_appcontext(cerrarConexion)
+CORS(app)  # permite peticiones desde React
 
 @app.route('/api/products', methods=['GET']) 
 def list_products():
@@ -46,3 +48,33 @@ def delete_product(product_id):
         return jsonify({'message': f'Producto {product_id} no encontrado'}), 404
     else:
         return jsonify({'message': f'Producto {product_id} eliminado'})
+    
+
+# Ruta para login
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    email = data.get("email")
+    password = data.get("password")
+
+    if not email or not password:
+        return jsonify({"error": "Faltan datos"}), 400
+
+    db = abrirConexion()
+    cursor = db.cursor()
+
+    # Guarda login en tabla (asegúrate de tener la tabla usuarios o logins)
+    cursor.execute(
+        "INSERT INTO customers (email, password) VALUES (%s, %s);",
+        (email, password)
+    )
+    db.commit()
+
+    cursor.close()
+
+    return jsonify({"message": "Login registrado exitosamente"}), 201
+
+
+
+if __name__ == "__main__":
+    app.run(debug=True)

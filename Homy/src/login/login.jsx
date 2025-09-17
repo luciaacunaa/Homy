@@ -1,16 +1,34 @@
 import React, { useState } from "react";
-import "./login.css"; // Importamos el CSS
+import "./login.css";
 
-
-//login component
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Email:", email, "Password:", password);
-    alert("Intento de login con:\n" + email);
+
+    try {
+      const response = await fetch("http://localhost:5000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Login registrado en la base de datos");
+        console.log("Respuesta del backend:", data);
+      } else {
+        alert("Error: " + data.error);
+      }
+    } catch (error) {
+      console.error("Error en la petición:", error);
+      alert("No se pudo conectar con el servidor");
+    }
   };
 
   return (
