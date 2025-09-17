@@ -1,10 +1,10 @@
-import Header from "./components/Header"; //  asegurate que el archivo se llame Header.jsx
+import Header from "../components/Header"; 
 
 function App() {
   return (
     <div>
       <Header />
-      {/* Acá va el resto de tu app */}
+      {/* Acá va el resto de la app */}
     </div>
   );
 }

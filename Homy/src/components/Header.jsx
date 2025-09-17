@@ -1,5 +1,5 @@
 import { Search, ShoppingCart, MapPin, User, ChevronDown } from "lucide-react";
-import "../header.css"
+import "./header.css"
 
 export default function Header() {
   return (
