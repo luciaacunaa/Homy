@@ -4,41 +4,15 @@ body{background-color: #fffbeb;}
 
 .header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
+  padding: 2rem 2rem; /*Es un espacio del evento hasta el borde*/
+  justify-content: space-between;  /*los pone en la misma linea, between los afila (adelante - medio - atrás)*/
   background-color: #48601c;
   box-shadow: 0 2px 5px #44522b;
 }
 
-.header-left,
-.header-center,
-.header-right {
+/* Contenedor de los botones de la derecha */
+.nav-right {
+  margin-left: auto; /* manda todo a la derecha */
   display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-/* Buscador central */
-.header-center {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  margin: 0 1rem;
-  position: relative;
-}
-
-
-.header-left span {
-  font-size: 1rem;
-}
-
-.header-right svg {
-  cursor: pointer;
-  color: #333;
-  transition: color 0.2s;
-}
-
-.header-right svg:hover {
-  color: #fd4b4b;
+  gap: 15px;
 }
