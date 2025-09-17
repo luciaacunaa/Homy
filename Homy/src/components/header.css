@@ -1,0 +1,18 @@
+/* Header.css  */
+
+body{background-color: #fffbeb;}
+
+.header {
+  display: flex;
+  padding: 2rem 2rem; /*Es un espacio del evento hasta el borde*/
+  justify-content: space-between;  /*los pone en la misma linea, between los afila (adelante - medio - atrás)*/
+  background-color: #48601c;
+  box-shadow: 0 2px 5px #44522b;
+}
+
+/* Contenedor de los botones de la derecha */
+.nav-right {
+  margin-left: auto; /* manda todo a la derecha */
+  display: flex;
+  gap: 15px;
+}

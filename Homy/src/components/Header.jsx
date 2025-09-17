@@ -1,9 +1,10 @@
 import { Search, ShoppingCart, MapPin, User, ChevronDown } from "lucide-react";
-import "../header.css"
+import "./header.css"
 
 export default function Header() {
   return (
     <header className="header">
+      <nav className="bg-red-700 text-white text-sm">
       {/*Barra superior */}
       <div className="bg-red-600 text-white">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
@@ -22,7 +23,26 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Íconos de acciones */}
+          
+        </div>
+      </div>
+
+      {/*Menu inf.*/}
+        <div className="max-w-7xl mx-auto flex items-center gap-6 px-6 py-2">
+          <button className="flex items-center gap-1 font-semibold hover:underline">
+            Categorías <ChevronDown size={16} />
+          </button>
+          <button className="hover:underline">Promociones</button>
+          <button className="hover:underline">Medios de pago</button>
+
+          {/* Links alineados a la derecha */}
+          <div className="ml-auto flex gap-4">
+            <a href="#" className="hover:underline">Instalaciones</a>
+            <a href="#" className="hover:underline">Locales</a>
+          </div>
+        </div>
+      </nav>
+      {/* Íconos de acciones */}
           <div className="flex items-center gap-6 text-sm">
             <button className="flex items-center gap-1 hover:underline">
               <MapPin size={18} />
@@ -36,26 +56,6 @@ export default function Header() {
               <ShoppingCart size={20} />
             </button>
           </div>
-        </div>
-      </div>
-
-      {/*Menu inf.*/}
-      <nav className="bg-red-700 text-white text-sm">
-        <div className="max-w-7xl mx-auto flex items-center gap-6 px-6 py-2">
-          <button className="flex items-center gap-1 font-semibold hover:underline">
-            Categorías <ChevronDown size={16} />
-          </button>
-          <button className="hover:underline">Promociones</button>
-          <button className="hover:underline">Hacelo Easy</button>
-          <button className="hover:underline">Medios de pago</button>
-
-          {/* Links alineados a la derecha */}
-          <div className="ml-auto flex gap-4">
-            <a href="#" className="hover:underline">Instalaciones</a>
-            <a href="#" className="hover:underline">Locales</a>
-          </div>
-        </div>
-      </nav>
     </header>
   );
 }
