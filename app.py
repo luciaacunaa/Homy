@@ -36,22 +36,6 @@ def list_products():
     cursor.close()
     return jsonify(products)
 
-@app.route('/api/products/<int:product_id>', methods=['DELETE'])
-def delete_product(product_id):
-    db = abrirConexion()
-    cursor = db.cursor()
-    
-    cursor.execute("DELETE FROM products WHERE products_id = %s;", (product_id,))
-    db.commit()  # 🔹 importante para que el DELETE se aplique
-    
-    deleted = cursor.rowcount
-    cursor.close()
-    
-    if deleted == 0:
-        return jsonify({'message': f'Producto {product_id} no encontrado'}), 404
-    else:
-        return jsonify({'message': f'Producto {product_id} eliminado'})
-    
 
 # Ruta para login
 @app.route('/login', methods=['POST'])
@@ -77,7 +61,26 @@ def login():
 
     return jsonify({"message": "Login registrado exitosamente"}), 201
 
+products = []
+@app.route('/api/products', methods=['POST']) # Agregar producto    
+def agregar_producto():
+    data = request.get_json()
+    name = data.get('name')
+    price = data.get('price')
+    
+    if not name or not price:
+        return jsonify({'error': 'Datos faltantes'}), 400
+    
+    product ={
+        'Nombre': name,
+        'Precio': price}
+
+    products.append(product)
+    return jsonify({'mensaje': 'El producto fue agregado', 'Producto': product}), 201
 
 
+
+#Todo tien que ir arriba de este if
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True)  # Totalmente necesario correr la pag con flask run --debug
+                         # para que refresque la pag y cambie los datos.
