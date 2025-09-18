@@ -2,7 +2,7 @@ from flask import Flask, g, jsonify
 import mysql.connector
 from flask import Flask, g, request, jsonify
 from flask_cors import CORS 
-
+from datetime import datetime
 
 def abrirConexion():
     if 'db' not in g:
@@ -53,7 +53,7 @@ def delete_product(product_id):
         return jsonify({'message': f'Producto {product_id} eliminado'})
     
 
-# Ruta para login
+# Ruta para login NO LO TOQUEN
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -81,3 +81,66 @@ def login():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+# Ruta para actualizar un producto, endpoint PUT
+
+@app.route('/api/products/<int:product_id>', methods=['PUT'])
+def update_product(product_id):
+    data = request.get_json()
+    products_name = data.get('products_name')
+    price = data.get('price')
+
+    if not products_name or price is None: 
+        return jsonify({'error': 'Faltan datos'}), 400
+
+    db = abrirConexion()
+    cursor = db.cursor()
+
+    cursor.execute(
+        "UPDATE products SET products_name = %s, price = %s WHERE products_id = %s;",
+        (products_name, price, product_id)
+    )
+    db.commit()
+    updated = cursor.rowcount
+    cursor.close()
+
+    if updated == 0:
+        return jsonify({'message': f'Producto {product_id} no encontrado'}), 404
+    else:
+        return jsonify({'message': f'Producto {product_id} actualizado correctamente'})
+
+
+# Ruta para el total, endpoint GET (esto de parte del usuario)
+@app.route('/api/receipt/usuario', methods=['POST'])
+def total_compra_seleccionados():
+    data = request.get_json()
+    productos = data.get('productos')  # lista de objetos: {products_id, cantidad}
+
+    if not productos or not isinstance(productos, list):
+        return jsonify({'error': 'Debes enviar una lista de productos'}), 400
+
+    productos_ids = [p['products_id'] for p in productos]
+    cantidades = {p['products_id']: p.get('cantidad', 1) for p in productos}
+
+    db = abrirConexion()
+    cursor = db.cursor(dictionary=True)
+    format_strings = ','.join(['%s'] * len(productos_ids))
+    cursor.execute(f"SELECT products_id, price FROM products WHERE products_id IN ({format_strings});", tuple(productos_ids))
+    productos_db = cursor.fetchall()
+    cursor.close()
+
+    total = 0
+    for producto in productos_db:
+        pid = producto['products_id']
+        cantidad = cantidades.get(pid, 1)
+        total += producto['price'] * cantidad
+
+    return jsonify({"total_compra": total})
+
+
+# Nueva ruta para obtener la fecha y hora del servidor, [estamos probando]
+@app.route('/api/server_datetime', methods=['GET'])
+def server_datetime():
+    now = datetime.now()
+    return jsonify({"datetime": now.strftime("%Y-%m-%d %H:%M:%S")})
+
