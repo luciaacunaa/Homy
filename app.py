@@ -79,5 +79,13 @@ def login():
 
 
 
+@app.route('/api/category', methods=['GET'])
+def list_categories():
+    cursor = db.cursor(dictionary=True)  
+    productos = cursor.fetchall()
+    cursor.close()
+    return jsonify(category)
+
+
 if __name__ == "__main__":
     app.run(debug=True)
