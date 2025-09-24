@@ -1,5 +1,4 @@
-
-Header.css 
+/* Header.css  */
 
 body{background-color: #fffbeb;}
 
@@ -16,35 +15,73 @@ body{background-color: #fffbeb;}
   gap: 15px;
 }
 
-.nav-container{
+.nav-container{ /*Contenedor del header*/
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 
-.search-bar{
+.container
+{ /*Contenedor del buscador y botones*/
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
+}
+
+.search-bar
+{ /*Recuadro del buscador*/
+  position: relative;
   display: flex;
   justify-content: center;
   flex-direction: row;
   align-items: center;
 }
 
-.search-bar input{ /*Buscador*/
+.search-bar input
+{ /*Buscador*/
   width: 100%; /*Ancho del buscador*/
   padding: 20px; /*Espacio entre el borde y el texto*/
   border: none;
   border-radius: 40px 40px 40px 40px; /*Borde redondo, lado izq.*/
   font-size: 18px; /*Tamaño del texto*/
+  background-color: #f5edce; /* color del buscador*/
+  box-shadow: 0 2px 5px #ddd5b2c9;
 }
 
-.search-bar input:focus {
+.search-bar input:focus 
+{ /*Cuando haces click en el buscador*/
   outline: none; /*Quita el borde azul al hacer click*/
-  box-shadow: 0 0 5px #29311a; /*Sombra al hacer click*/
+  box-shadow: 0 2px 5px #ddd5b2c9;
 }
 
-.search-bar button{
-background-color: #f5edce;
+/* Botones generales del header */
+.header-btn { /*Botones ubi, ingresar y carrito*/
+ background-color: #f5edce;
+  border: none;
+  border-radius: 40px 40px 40px 40px;
+  padding: 8px 16px;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px #ddd5b2c9;
+}
+
+button { /*Botones categoria, promos y pago*/
+  background-color: #f5edce;
+  border: none;
+  border-radius: 40px 40px 40px 40px;
+  padding: 8px 16px;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px #ddd5b2c9;
+}
+
+.search-bar button{ /*Botón lupita*/
+position: absolute;
+right: 5px;
+background-color: #48601c;
 font-size: 15px;
 border: none;
 padding: 10px 15px;
@@ -52,77 +89,6 @@ border-radius: 40px 40px 40px 40px;
 box-shadow: 0 2px 5px #ddd5b2c9;
 }
 
-
-
-
-
-
-
-
-
-
-/* Header.css  */
-
-body {
-  background-color: #fffbeb;
-}
-
-.header {
-  padding: 2rem 2rem; /* Es un espacio del evento hasta el borde */
-  background-color: #48601c;
-  box-shadow: 0 2px 5px #44522b;
-}
-
-.nav-right {
-  margin-left: auto; /* Manda todo a la derecha */
-  display: flex;
-  gap: 15px;
-}
-
-.nav-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.search-bar {
-  display: flex;
-  align-items: center;
-  position: relative; /* Necesario para posicionar el botón dentro del input */
-  max-width: 500px; /* Ancho máximo para el input */
-  width: 100%; /* O puedes fijar un tamaño si lo prefieres */
-}
-
-.search-bar input {
-  width: 100%;
-  padding: 10px 40px 10px 20px; /* Espaciado para hacer espacio para el botón */
-  border: none;
-  border-radius: 40px;
-  font-size: 18px;
-  height: 40px; /* Fija la altura para que coincida con el botón */
-}
-
-.search-bar input:focus {
-  outline: none;
-  box-shadow: 0 0 5px #29311a;
-}
-
-.search-bar button {
-  position: absolute;
-  right: 10px; /* Alinea el botón al lado derecho */
-  top: 50%;
-  transform: translateY(-50%); /* Centra el botón verticalmente */
-  background-color: #f5edce;
-  font-size: 15px;
-  border: none;
-  padding: 10px;
-  border-radius: 50%;
-  box-shadow: 0 2px 5px #ddd5b2c9;
-  height: 40px;
-  width: 40px; /* Fija el tamaño del botón */
-  cursor: pointer;
-}
-
-.search-bar button:hover {
-  background-color: #e1d6a5; /* Cambia el color al pasar el ratón */
+button:hover {
+  background-color: #c1b67d;
 }

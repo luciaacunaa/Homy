@@ -7,7 +7,7 @@ export default function Header() {
       <nav className="nav-container">
         {/* Barra superior */}
             {/* Buscador centrado */}
-          <div className="search-bar" style={{ gap: '20px', display: 'flex', flexWrap: 'wrap'}}>
+          <div className="container" style={{ gap: '20px', display: 'flex', flexWrap: 'wrap'}}>
             <button>
               Categorías <ChevronDown size={16} />
             </button>
@@ -17,7 +17,7 @@ export default function Header() {
 
           {/* Links alineados a la derecha */}
               <div className="search-bar" style={{width: '320px', display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-                <div style={{borderRadius: '40px 40px 40px 40px', boxShadow: '#ddd5b2c9', display: 'flex', alignItems: 'center', width: '100%'}}>
+                <div style={{borderRadius: '40px 40px 40px 40px',boxShadow: '#dec96ac9', display: 'flex', alignItems: 'center', width: '100%'}}>
                   <input
                     type="text"
                     placeholder="Buscá productos y más..."
@@ -28,17 +28,17 @@ export default function Header() {
                   </button>
                   </div>
                 </div>
-              <div style={{width: '200px'}}>
-                <button>
+              <div style={{ display: 'flex', gap: '20px', alignItems: 'center'}}>  {/*carrito, ubi, ingresar*/}
+                <button className="header-btn">
                   <MapPin size={18} />
                   <span>Ubicación</span>
                 </button>
-                <button>
+                <button className="header-btn">
                   <User size={18} />
                   <span>Ingresar</span>
                 </button>
-                <button>
-                  <ShoppingCart size={20} />
+                <button className="header-btn">
+                  <ShoppingCart size={18} />
                 </button>
               </div>
       </nav>
