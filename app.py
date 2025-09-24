@@ -75,7 +75,7 @@ def agregar_producto():
         'Nombre': name,
         'Precio': price}
 
-    products.append(product)
+    products.append(product) 
     return jsonify({'mensaje': 'El producto fue agregado', 'Producto': product}), 201
 
 
