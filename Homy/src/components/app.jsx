@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import Header from "../components/Header";
 import Cart from "../cart/Cart";
+import Header from "../components/Header"; 
+import ProductList from "./grilla/grilla";
 
 function App() {
   const [cartVisible, setCartVisible] = useState(false);
@@ -12,6 +14,7 @@ function App() {
       <Header onCartClick={() => setCartVisible(true)} />
       {/* Acá va el resto de la app */}
   {<Cart onClose={() => setCartVisible(false)} visible={cartVisible} />}
+      <ProductList />
     </div>
   );
 }
