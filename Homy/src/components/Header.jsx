@@ -1,4 +1,5 @@
 import { Search, ShoppingCart, MapPin, User, ChevronDown } from "lucide-react";
+import { FaGripLines } from "react-icons/fa";
 import './header.css';
 
 export default function Header() {
@@ -9,7 +10,7 @@ export default function Header() {
             {/* Buscador centrado */}
           <div className="container" style={{ gap: '20px', display: 'flex', flexWrap: 'wrap'}}>
             <button>
-              Categorías <ChevronDown size={16} />
+              < FaGripLines size={15} />  Categorías
             </button>
             <button>Promociones</button>
             <button>Medios de pago</button>
