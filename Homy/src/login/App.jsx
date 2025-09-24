@@ -1,6 +1,11 @@
-import ProductList from "./components/grilla/grilla";
-import Login from "./login/login";
+import Login from './login'
+import Cart from '../cart/Cart'
 
 export default function App(){
-    return <ProductList/>
+    return (
+        <>
+            <Login/>
+            <Cart/>
+        </>
+    )
 }

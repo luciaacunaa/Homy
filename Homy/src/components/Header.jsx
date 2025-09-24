@@ -2,7 +2,7 @@ import { Search, ShoppingCart, MapPin, User, ChevronDown } from "lucide-react";
 import { FaGripLines } from "react-icons/fa";
 import './header.css';
 
-export default function Header() {
+export default function Header({ onCartClick, onLoginClick }) {
   return (
     <header className="header">
       <nav className="nav-container">
@@ -34,11 +34,11 @@ export default function Header() {
                   <MapPin size={18} />
                   <span>Ubicación</span>
                 </button>
-                <button className="header-btn">
+                <button className="header-btn" onClick={onLoginClick}>
                   <User size={18} />
                   <span>Ingresar</span>
                 </button>
-                <button className="header-btn">
+                <button className="header-btn" onClick={onCartClick}>
                   <ShoppingCart size={18} />
                 </button>
               </div>

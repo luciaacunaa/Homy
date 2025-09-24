@@ -6,8 +6,9 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background: #fffbeb  ; /*crema pantalla completa */
+  background: #f5edce ; /*crema pantalla completa */
   font-family: Arial, sans-serif;
+  
 }
 
 .login-container h2 {
@@ -23,7 +24,8 @@
   padding: 20px;
   border-radius: 10px;
   background: white;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  border: 2px solid #48601c; /* Borde verde */
+   
 }
 
 .login-form input {
@@ -50,4 +52,12 @@
 
 .login-form button:hover {
   background:  #48601c  ;
+}
+
+body {
+  background: #f5edce; /* Cambia el color aquí */
+}
+
+.login-container button:hover {
+  background: #58612c;
 }

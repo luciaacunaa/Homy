@@ -1,0 +1,56 @@
+.register-container {
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 24px;
+  background: #fff7d9  ; /*crema*/
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-color: #48601c;
+}
+.register-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color:  #48601c ; /*letra registro*/
+
+}
+.register-container form {
+  display: flex;
+  flex-direction: column;
+}
+.register-container label {
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+.register-container input {
+  padding: 8px;
+  margin-top: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.register-container button {
+  margin-top: 16px;
+  padding: 10px;
+  background: #48601c;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.register-container button:hover {
+  background: #58612c;
+}
+
+.register-container input:focus {
+  border-color: #48601c; /* Cambia el color aquí, del bordesito a la hora de hacer clik */
+  outline: none;
+}
+
+body {
+  background:  #f5edce; /* Cambia el color aquí, pantalla completa */
+}
+
+.register-container {
+  /* ...otras propiedades... */
+  border: 2px solid #48601c; /* Borde verde */
+}
