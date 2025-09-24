@@ -92,3 +92,9 @@ box-shadow: 0 2px 5px #ddd5b2c9;
 button:hover {
   background-color: #c1b67d;
 }
+
+.header-btn-alignment {
+  display: flex;
+  align-items: center;
+}
+

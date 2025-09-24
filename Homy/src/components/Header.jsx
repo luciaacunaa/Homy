@@ -1,19 +1,23 @@
 import { Search, ShoppingCart, MapPin, User, ChevronDown } from "lucide-react";
 import { FaGripLines } from "react-icons/fa";
+import { CiDiscount1 } from "react-icons/ci";
+import { MdPayment } from "react-icons/md";
 import './header.css';
 
-export default function Header({ onCartClick, onLoginClick }) {
+export default function Header() {
   return (
     <header className="header">
       <nav className="nav-container">
         {/* Barra superior */}
             {/* Buscador centrado */}
           <div className="container" style={{ gap: '20px', display: 'flex', flexWrap: 'wrap'}}>
-            <button>
-              < FaGripLines size={15} />  Categorías
+            <button className="header-btn-alignment">
+              < FaGripLines size={15} /> Categorías 
             </button>
-            <button>Promociones</button>
-            <button>Medios de pago</button>
+            <button className="header-btn-alignment">
+              <CiDiscount1 size={18} />  Promociones
+              </button>
+            <button className="header-btn-alignment"><MdPayment  size={18}/>  Medios de pago</button>
           </div>
 
           {/* Links alineados a la derecha */}
@@ -30,15 +34,15 @@ export default function Header({ onCartClick, onLoginClick }) {
                   </div>
                 </div>
               <div style={{ display: 'flex', gap: '20px', alignItems: 'center'}}>  {/*carrito, ubi, ingresar*/}
-                <button className="header-btn">
+                <button className="header-btn header-btn-alignment" >
                   <MapPin size={18} />
-                  <span>Ubicación</span>
+                  <span>  Ubicación</span>
                 </button>
-                <button className="header-btn" onClick={onLoginClick}>
+                <button className="header-btn header-btn-alignment" >
                   <User size={18} />
-                  <span>Ingresar</span>
+                  <span> Ingresar</span>
                 </button>
-                <button className="header-btn" onClick={onCartClick}>
+                <button className="header-btn header-btn-alignment">
                   <ShoppingCart size={18} />
                 </button>
               </div>
@@ -48,3 +52,4 @@ export default function Header({ onCartClick, onLoginClick }) {
     </header>
   );
 }
+
