@@ -1,17 +1,20 @@
 from flask import Flask, g, jsonify
-import mysql.connector
+import mysql.connector, os
 from flask import Flask, g, request, jsonify
 from flask_cors import CORS 
-from datetime import datetime
+from dotenv import load_dotenv
+load_dotenv(".env/paty.env")  # Carga las variables de entorno desde el archivo .env
+secret_key = os.getenv("SECRET_KEY")
+
 
 def abrirConexion():
     if 'db' not in g:
         g.db = mysql.connector.connect(
-            host="10.9.120.5",     # IP del servidor
-            port=3306,             # Puerto (3306 por defecto)
-            user="homy",           # Usuario
-            password="homy1234",   # Contraseña
-            database="homy"        # Base de datos
+            host=os.getenv("DB_HOST"),     # IP del servidor
+            port=int(os.getenv("DB_PORT")),             # Puerto (3306 por defecto)
+            user=os.getenv("DB_USER"),           # Usuario
+            password=os.getenv("DB_PASSWORD"),   # Contraseña
+            database=os.getenv("DB_NAME")        # Base de datos
         )
     return g.db
 
@@ -79,13 +82,8 @@ def agregar_producto():
     return jsonify({'mensaje': 'El producto fue agregado', 'Producto': product}), 201
 
 
-<<<<<<< HEAD
 
-#Todo tien que ir arriba de este if
-if __name__ == "__main__":
-    app.run(debug=True)  # Totalmente necesario correr la pag con flask run --debug
-                         # para que refresque la pag y cambie los datos.
-=======
+
 @app.route('/api/category', methods=['GET'])
 def list_categories():
     cursor = db.cursor(dictionary=True)  
@@ -93,9 +91,6 @@ def list_categories():
     cursor.close()
     return jsonify(category)
 
-
-if __name__ == "__main__":
-    app.run(debug=True)
 
 # Ruta para actualizar un producto, endpoint PUT
 
@@ -159,4 +154,13 @@ def server_datetime():
     now = datetime.now()
     return jsonify({"datetime": now.strftime("%Y-%m-%d %H:%M:%S")})
 
->>>>>>> 3af0b21397894066aace368625af9a6f44e0e4c7
+
+
+
+
+
+#Todo tien que ir arriba de este if
+if __name__ == "__main__":
+    app.run(debug=True)  # Totalmente necesario correr la pag con flask run --debug
+                         # para que refresque la pag y cambie los datos.
+

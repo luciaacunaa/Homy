@@ -2,8 +2,7 @@
 
 import React, { useState } from "react";
 import Header from "../components/Header";
-import Cart from "../cart/Cart";
-import Header from "../components/Header"; 
+import Cart from "../cart/Cart"; 
 import ProductList from "./grilla/grilla";
 
 function App() {
