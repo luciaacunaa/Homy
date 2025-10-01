@@ -2,10 +2,7 @@ import React, { useState } from 'react';
 import './cart.css';
 import { MdOutlineShoppingCart } from "react-icons/md";
 
-function Cart({ onClose, visible }) {
-  // Estado del carrito: array de productos
-  const [items, setItems] = useState([]);
-
+function Cart({ onClose, visible, items = [], goToCheckout }) {
   if (!visible) return null;
 
   return (
@@ -24,14 +21,21 @@ function Cart({ onClose, visible }) {
             </span>
         </div>
       ) : (
-        <div className="cart-items">
-          {/* Aquí se mostrarán los productos */}
-          {items.map((item, idx) => (
-            <div key={idx} className="cart-item">
-              {item.name} - ${item.price}
-            </div>
-          ))}
-        </div>
+        <>
+          <div className="cart-items">
+            {items.map((item, idx) => {
+              const price = Number(item.price);
+              return (
+                <div key={idx} className="cart-item">
+                  {item.name} - ${price} x {item.quantity}
+                </div>
+              );
+            })}
+          </div>
+          <button className="cart-summary-btn" onClick={goToCheckout}>
+            Ir al carrito de compras
+          </button>
+        </>
       )}
     </div>
   );

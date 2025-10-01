@@ -3,6 +3,7 @@ import mysql.connector, os
 from flask import Flask, g, request, jsonify
 from flask_cors import CORS 
 from dotenv import load_dotenv
+from datetime import datetime
 load_dotenv(".env/paty.env")  # Carga las variables de entorno desde el archivo .env
 secret_key = os.getenv("SECRET_KEY")
 
@@ -148,8 +149,8 @@ def total_compra_seleccionados():
     return jsonify({"total_compra": total})
 
 
+
 # Nueva ruta para obtener la fecha y hora del servidor, [estamos probando] -- Lu y Mary
-datetime=[]
 @app.route('/api/server_datetime', methods=['GET'])
 def server_datetime():
     now = datetime.now()
@@ -187,6 +188,17 @@ def register_user():
     cursor.close()
 
     return jsonify({'message': 'Usuario registrado exitosamente'}), 201
+
+# Endpoint para que el admin obtenga todos los pedidos -mary (preguntar mañana)
+@app.route('/api/admin/receipt', methods=['GET'])
+def admin_get_orders():
+    db = abrirConexion()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM receipt;")
+    orders = cursor.fetchall()
+    receipt = orders
+    cursor.close()
+    return jsonify(receipt)
 
 
 #Todo tien que ir arriba de este if

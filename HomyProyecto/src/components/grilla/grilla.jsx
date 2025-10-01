@@ -72,7 +72,7 @@ const products = [
 
 ];
 
-const ProductList = () => {
+const ProductList = ({ addToCart, removeFromCart, cartItems }) => {
   useEffect(() => {
     fetch("http://127.0.0.1:5000/api/products")
       .then((data) => data.json())
@@ -91,10 +91,25 @@ const ProductList = () => {
             <p>
               <strong>Precio:</strong> ${product.price}
             </p>
-            {/* Botón que lleva a la página del producto */}
-            <button onClick={() => navigate(`/product/${product.id}`)}>
-              Agregar al carrito
-            </button>
+            {/* Botón para agregar al carrito o sumador/restador */}
+            {(() => {
+              const cartItem = cartItems.find((item) => item.id === product.id);
+              if (cartItem) {
+                return (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <button onClick={() => removeFromCart(product)}>-</button>
+                    <span>{cartItem.quantity}</span>
+                    <button onClick={() => addToCart(product)}>+</button>
+                  </div>
+                );
+              } else {
+                return (
+                  <button onClick={() => addToCart(product)}>
+                    Agregar al carrito
+                  </button>
+                );
+              }
+            })()}
           </div>
         ))}
       </div>
