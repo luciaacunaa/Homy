@@ -13,12 +13,19 @@ function App() {
   const [loginVisible, setLoginVisible] = useState(false);
   const [user, setUser] = useState(null); // usuario autenticado
 
+  const handleLogout = () => {
+    setUser(null);
+    setLoginVisible(false);
+    window.location.reload();
+  };
+
   return (
     <div>
       <Header 
         onCartClick={() => setCartVisible(true)} 
         onLoginClick={() => setLoginVisible(true)}
         user={user}
+        onLogout={handleLogout}
       />
       {/* Mostrar solo login/register si loginVisible es true, si no el resto de la app */}
       {loginVisible ? (

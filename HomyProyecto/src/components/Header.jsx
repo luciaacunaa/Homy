@@ -4,7 +4,7 @@ import { CiDiscount1 } from "react-icons/ci";
 import { MdPayment } from "react-icons/md";
 import './header.css';
 
-export default function Header({ onCartClick, onLoginClick, user }) {
+export default function Header({ onCartClick, onLoginClick, user, onLogout }) {
   return (
     <header className="header">
       <nav className="nav-container">
@@ -39,10 +39,15 @@ export default function Header({ onCartClick, onLoginClick, user }) {
                   <span>  Ubicación</span>
                 </button>
                 {user ? (
-                  <button className="header-btn header-btn-alignment" style={{ fontWeight: 'bold', color: '#48601c' }}>
-                    <User size={18} />
-                    <span> {user.customers_name}</span>
-                  </button>
+                  <>
+                    <button className="header-btn header-btn-alignment" style={{ fontWeight: 'bold', color: '#48601c' }}>
+                      <User size={18} />
+                      <span> {user.customers_name}</span>
+                    </button>
+                    <button className="header-btn header-btn-alignment" onClick={onLogout} style={{ marginLeft: 8, color: '#b22222', fontWeight: 'bold' }}>
+                      Cerrar sesión
+                    </button>
+                  </>
                 ) : (
                   <button className="header-btn header-btn-alignment" onClick={onLoginClick}>
                     <User size={18} />

@@ -11,9 +11,25 @@ export default function Login({ onClose, onLoginSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showRegister, setShowRegister] = useState(false);
-
+  const [error, setError] = useState("");
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+
+ // Validación para correo de Gmail
+    if (!/^[\w-]+(\.[\w-]+)*@gmail\.com$/.test(email)) {
+      setError("El correo debe ser de Gmail.");
+      return;
+    } else {
+      setError(""); // Limpiar error si la validación es correcta
+    }
+
+
+
+
+
+
     try {
       const response = await fetch("http://localhost:5000/login", {
         method: "POST",
@@ -55,6 +71,8 @@ export default function Login({ onClose, onLoginSuccess }) {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
+        {error && <div style={{ color: 'red', fontSize: '12px' }}>{error}</div>} {/* Mostrar mensaje de error */}
+
         <input
           type="password"
           placeholder="Contraseña"

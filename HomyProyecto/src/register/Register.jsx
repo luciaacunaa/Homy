@@ -11,6 +11,7 @@ function Register({ onBack }) {
     email: '',
     password: ''
   });
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setForm({
@@ -21,6 +22,13 @@ function Register({ onBack }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Validación para correo de Gmail
+    if (!/^[\w-]+(\.[\w-]+)*@gmail\.com$/.test(form.email)) {
+      setError("El correo debe ser de Gmail.");
+      return;
+    } else {
+      setError("");
+    }
     try {
       const response = await fetch('http://localhost:5000/api/register', {
         method: 'POST',
@@ -56,6 +64,7 @@ function Register({ onBack }) {
       )}
       <h2>Registrarse en Homy </h2>
       <form onSubmit={handleSubmit}>
+        {error && <div style={{ color: 'red', marginBottom: 8 }}>{error}</div>}
         <label htmlFor="customers_name" style={{marginBottom: '6px', marginTop: '16px'}}>Nombre:</label>
         <input
           type="text"
