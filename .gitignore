@@ -1,4 +1,8 @@
 .env/
+.venv/
+
+node_modules/
+
 *.pyc
 __pycache__/
 instance/
@@ -12,4 +16,3 @@ build/
 .idea/
 *.swp
 *~
-.venv/

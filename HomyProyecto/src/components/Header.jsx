@@ -4,7 +4,7 @@ import { CiDiscount1 } from "react-icons/ci";
 import { MdPayment } from "react-icons/md";
 import './header.css';
 
-export default function Header() {
+export default function Header({ onCartClick, onLoginClick, user }) {
   return (
     <header className="header">
       <nav className="nav-container">
@@ -38,11 +38,18 @@ export default function Header() {
                   <MapPin size={18} />
                   <span>  Ubicación</span>
                 </button>
-                <button className="header-btn header-btn-alignment" >
-                  <User size={18} />
-                  <span> Ingresar</span>
-                </button>
-                <button className="header-btn header-btn-alignment">
+                {user ? (
+                  <button className="header-btn header-btn-alignment" style={{ fontWeight: 'bold', color: '#48601c' }}>
+                    <User size={18} />
+                    <span> {user.customers_name}</span>
+                  </button>
+                ) : (
+                  <button className="header-btn header-btn-alignment" onClick={onLoginClick}>
+                    <User size={18} />
+                    <span> Ingresar</span>
+                  </button>
+                )}
+                <button className="header-btn header-btn-alignment" onClick={onCartClick}>
                   <ShoppingCart size={18} />
                 </button>
               </div>
