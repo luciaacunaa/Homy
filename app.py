@@ -41,8 +41,9 @@ def list_products():
     return jsonify(products)
 
 
-# Ruta para login NO LO TOQUEN -- Mary
-@app.route('/login', methods=['POST']) 
+
+# Ruta para login: valida usuario y contraseña -- Mary
+@app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     email = data.get("email")
@@ -52,18 +53,21 @@ def login():
         return jsonify({"error": "Faltan datos"}), 400
 
     db = abrirConexion()
-    cursor = db.cursor()
+    cursor = db.cursor(dictionary=True)
 
-    # Guarda login en tabla (asegúrate de tener la tabla usuarios o logins)
+
+    # Busca el usuario por email y contraseña --
     cursor.execute(
-        "INSERT INTO customers (email, password) VALUES (%s, %s);",
+        "SELECT * FROM customers WHERE customers_email = %s AND customers_password = %s;",
         (email, password)
     )
-    db.commit()
-
+    user = cursor.fetchone()
     cursor.close()
 
-    return jsonify({"message": "Login registrado exitosamente"}), 201
+    if user:
+        return jsonify({"message": "Login exitoso", "user": user}), 200
+    else:
+        return jsonify({"error": "Credenciales incorrectas"}), 401
 
 products = []
 @app.route('/api/products', methods=['POST']) # Agregar producto   -- Lu
@@ -85,12 +89,15 @@ def agregar_producto():
 
 
 
+
 @app.route('/api/category', methods=['GET']) # Abi
 def list_categories():
-    cursor = db.cursor(dictionary=True)  
-    productos = cursor.fetchall()
+    db = abrirConexion()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM category;")
+    categories = cursor.fetchall()
     cursor.close()
-    return jsonify(category)
+    return jsonify(categories)
 
 
 # Ruta para actualizar un producto, endpoint PUT -- Mary
