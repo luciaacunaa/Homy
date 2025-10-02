@@ -37,7 +37,6 @@ import { MdPayment } from "react-icons/md";
 import { GrMapLocation } from "react-icons/gr";
 import './header.css';
 
-
 export default function Header({ onCartClick, onLoginClick, user, onLogout }) {
   const [showMap, setShowMap] = useState(false);
   const navigate = useNavigate();
