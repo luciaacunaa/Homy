@@ -4,6 +4,9 @@ from flask import Flask, g, request, jsonify
 from flask_cors import CORS 
 from dotenv import load_dotenv
 from datetime import datetime
+import mercadopago
+# Agrega credenciales
+sdk = mercadopago.SDK("APP_USR-4690612447740135-100209-172bfed90c4a08167a042ed317ae801b-1260263239")
 load_dotenv(".env/paty.env")  # Carga las variables de entorno desde el archivo .env
 secret_key = os.getenv("SECRET_KEY")
 
@@ -31,7 +34,7 @@ CORS(app)  # Habilita CORS para todas las rutas de todos los orígenes
 app.teardown_appcontext(cerrarConexion)
 CORS(app)  # permite peticiones desde React
 
-@app.route('/api/products', methods=['GET']) # Listar productos -- Lu
+@app.route('/products', methods=['GET']) # Listar productos -- Lu
 def list_products():
     db = abrirConexion()
     cursor = db.cursor(dictionary=True)
@@ -263,8 +266,42 @@ def admin_get_orders():
     return jsonify(receipt)
 
 
+
+# SDK de Mercado Pago, PROBANDO MERCADOPAGO -- maryyy
+# Crea un ítem en la preferencia
+#ruta para crear la preferencia de pago
+
+@app.route('/crear_preferencia', methods=['POST'])
+def crear_preferencia(): 
+    try:
+        preference_data = {
+            "items": [
+                {
+                    "title": "Mi producto",
+                    "quantity": 1,
+                    "unit_price": 75.76,
+                }
+            ]
+        }
+
+        preference_response = sdk.preference().create(preference_data)
+        preference = preference_response["response"]
+
+        # Devuelvo el ID de la preferencia para usarlo en el frontend
+        return jsonify({"id": preference.get("id"),
+            "init_point": preference.get("init_point"),            # URL para redirigir al checkout real
+            "sandbox_init_point": preference.get("sandbox_init_point"),  # URL de sandbox
+            "items": preference.get("items"),
+            "status": preference.get("status")})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 #Todo tien que ir arriba de este if
 if __name__ == "__main__":
     app.run(debug=True)  # Totalmente necesario correr la pag con flask run --debug
                          # para que refresque la pag y cambie los datos.
+
+
 

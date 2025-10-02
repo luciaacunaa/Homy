@@ -1,4 +1,5 @@
 
+
 import React, { useEffect, useState } from "react";
 import "./checkout.css";
 
@@ -35,8 +36,11 @@ const Checkout = ({ cartItems }) => {
       });
   }, [cartItems]);
 
-  return (
-    <div className="checkout-container">
+  return ( //boton de atrás lindo
+    <div className="checkout-container" style={{ position: 'relative' }}>
+      <button className="back-btn" onClick={() => window.history.back()}>
+        &#8592; Atrás
+      </button>
       <h2 className="checkout-title">Resumen de la compra</h2>
       {cartItems.length === 0 ? (
         <p>No hay productos en el carrito.</p>
