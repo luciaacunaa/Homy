@@ -1,23 +1,67 @@
+
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+function PromocionesModal({ open, onClose, images }) {
+  if (!open) return null;
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100vw',
+      height: '100vh',
+      background: 'rgba(0,0,0,0.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 9999
+    }}
+      onClick={onClose}
+    >
+      <div style={{ position: 'relative', background: '#fff', borderRadius: 8, padding: 24, maxWidth: 700, width: '90vw', boxShadow: '0 0 0 3px #f5edce', display: 'flex', flexDirection: 'column', alignItems: 'center' }} onClick={e => e.stopPropagation()}>
+        <button onClick={onClose} style={{ position: 'absolute', top: 8, right: 8, background: '#f5edce', border: 'none', fontSize: 24, cursor: 'pointer', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+        <h2 style={{ color: '#48601c', marginBottom: 16 }}>Promociones</h2>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'center' }}>
+          {images && images.length > 0 ? images.map((img, idx) => (
+            <img key={idx} src={img} alt={`promo-${idx}`} style={{ maxWidth: 250, maxHeight: 180, borderRadius: 8, boxShadow: '0 2px 8px #0002' }} />
+          )) : <span style={{ color: '#888' }}>No hay imágenes de promociones aún.</span>}
+        </div>
+      </div>
+    </div>
+  );
+}
 import { Search, ShoppingCart, MapPin, User, ChevronDown } from "lucide-react";
 import { FaGripLines } from "react-icons/fa";
 import { CiDiscount1 } from "react-icons/ci";
 import { MdPayment } from "react-icons/md";
+import { GrMapLocation } from "react-icons/gr";
 import './header.css';
 
 
 export default function Header({ onCartClick, onLoginClick, user, onLogout }) {
- return (
+  const [showMap, setShowMap] = useState(false);
+  const navigate = useNavigate();
+  const handleOpenMap = () => setShowMap(true);
+  const handleCloseMap = () => setShowMap(false);
+  const handleOpenPromos = () => navigate('/promotions');
+  return (
    <header className="header">
      <nav className="nav-container">
        {/* Barra superior */}
            {/* Buscador centrado */}
-         <div className="container" style={{ gap: '20px', display: 'flex', flexWrap: 'wrap'}}>
+         <div className="container" style={{ gap: '20px', display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
+           <img
+             src="/promos/logo grande.PNG"
+             alt="Logo Homy"
+             style={{ height: 64, width: 64, marginRight: 24, borderRadius: '50%', objectFit: 'cover', display: 'block', cursor: 'pointer' }}
+             onClick={() => navigate('/')} 
+           />
            <button className="header-btn-alignment">
              < FaGripLines size={15} /> Categorías
            </button>
-           <button className="header-btn-alignment">
+           <button className="header-btn-alignment" onClick={handleOpenPromos}>
              <CiDiscount1 size={18} />  Promociones
-             </button>
+           </button>
            <button className="header-btn-alignment"><MdPayment  size={18}/>  Medios de pago</button>
          </div>
 
@@ -36,10 +80,43 @@ export default function Header({ onCartClick, onLoginClick, user, onLogout }) {
                  </div>
                </div>
              <div style={{ display: 'flex', gap: '20px', alignItems: 'center'}}>  {/*carrito, ubi, ingresar*/}
-               <button className="header-btn header-btn-alignment" >
+               <button
+                 className="header-btn header-btn-alignment"
+                 style={{ display: 'flex', alignItems: 'center' }}
+                 onClick={handleOpenMap}
+               >
                  <MapPin size={18} />
                  <span>  Ubicación</span>
                </button>
+               {showMap && (
+                 <div style={{
+                   position: 'fixed',
+                   top: 0,
+                   left: 0,
+                   width: '100vw',
+                   height: '100vh',
+                   background: 'rgba(0,0,0,0.5)',
+                   display: 'flex',
+                   alignItems: 'center',
+                   justifyContent: 'center',
+                   zIndex: 9999
+                 }}
+                   onClick={handleCloseMap}
+                 >
+                   <div style={{ position: 'relative', background: '#48601c', borderRadius: 8, padding: 16, maxWidth: 600, width: '90vw', boxShadow: '0 0 0 3px #f5edce' }} onClick={e => e.stopPropagation()}>
+                     <button onClick={handleCloseMap} style={{ position: 'absolute', top: 8, right: 8, background: '#f5edce', border: 'none', fontSize: 24, cursor: 'pointer', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+                     <div style={{ textAlign: 'center', marginBottom: 8 }}>
+                       <span style={{ color: '#f5edce', fontWeight: 'bold', fontSize: 18, display: 'inline-block', margin: '0 auto 8px auto', background: 'transparent' }}>Ubicación en Google Maps</span>
+                     </div>
+                           <div style={{ marginTop: 8, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                             <a href="https://maps.app.goo.gl/SMSZfqBYi664c8eQA" target="_blank" rel="noopener noreferrer" style={{ color: '#f5edce', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 4 }}>
+                               Ver en Google Maps
+                               <GrMapLocation style={{ marginLeft: 4, fontSize: 20 }} />
+                             </a>
+                           </div>
+                   </div>
+                 </div>
+               )}
                {user ? (
                  <>
                    <button className="header-btn header-btn-alignment" style={{ fontWeight: 'bold', color: '#48601c' }}>

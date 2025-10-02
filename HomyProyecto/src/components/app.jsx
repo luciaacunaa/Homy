@@ -6,6 +6,7 @@ import Cart from "../cart/Cart";
 import ProductList from "./grilla/grilla";
 import Checkout from "./Checkout";
 import Login from "../login/login";
+import Promociones from "./Promociones";
 
 function App() {
   const navigate = useNavigate();
@@ -101,6 +102,16 @@ function App() {
                 cartItems={cartItems}
               />
             </>
+          }
+        />
+        <Route
+          path="/promotions"
+          element={
+            <Promociones images={[
+              '/promos/Cream and Brown Minimalist Chair Furniture Sale Flyer.png',
+              '/promos/Descuento de noviembre en Mercado Pago.png',
+              '/promos/Feria de Descuentos Noviembre 2023.png'
+            ]} />
           }
         />
         <Route

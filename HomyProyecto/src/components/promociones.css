@@ -1,0 +1,12 @@
+.promo-img {
+  max-width: 480px;
+  max-height: 340px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px #0002;
+  transition: transform 0.25s cubic-bezier(.4,1.5,.5,1);
+}
+.promo-img:hover {
+  transform: scale(1.07);
+  z-index: 2;
+  box-shadow: 0 6px 24px #0003;
+}
