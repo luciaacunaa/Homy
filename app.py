@@ -267,7 +267,7 @@ def admin_get_orders():
 
 
 
-# SDK de Mercado Pago, PROBANDO MERCADOPAGO -- maryyy
+# SDK de Mercado Pago, PROBANDO MERCADOPAGO -- maryyy backend
 # Crea un ítem en la preferencia
 #ruta para crear la preferencia de pago
 

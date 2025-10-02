@@ -4,8 +4,8 @@ import { CiDiscount1 } from "react-icons/ci";
 import { MdPayment } from "react-icons/md";
 import './header.css';
 
-
 export default function Header({ onCartClick, onLoginClick, user, onLogout }) {
+
  return (
    <header className="header">
      <nav className="nav-container">
