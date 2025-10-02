@@ -88,16 +88,71 @@ def agregar_producto():
 
 
 
+@app.route('/api/category/<int:category_id>', methods=['GET']) #abril
+def list_categories(category_id):
+   try:
+       # Lógica para obtener las categorías utilizando category_id
+       db = abrirConexion()  # Cambié get_db_connection() por abrirConexion()
+       cursor = db.cursor(dictionary=True)
+       cursor.execute("SELECT category_name FROM category WHERE category_id = %s", (category_id,))
+       category = cursor.fetchone()  # Obtén una sola categoría
+       cursor.close()
+       db.close()
 
 
-@app.route('/api/category', methods=['GET']) # Abi
-def list_categories():
-    db = abrirConexion()
-    cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM category;")
-    categories = cursor.fetchall()
-    cursor.close()
-    return jsonify(categories)
+       if category is None:
+           return jsonify({"message": "Category not found"}), 404
+      
+       return jsonify(category)
+   except Exception as e:
+       return jsonify({"error": str(e)}), 500
+
+
+
+
+@app.route('/api/categoria_con_productos', methods=['GET']) #abril
+def categoria_con_productos():
+   try:
+       # Establece la conexión a la base de datos
+       db = abrirConexion()  # Usa la función abrirConexion que ya tienes definida
+       cursor = db.cursor(dictionary=True)
+      
+       # Ejecuta la consulta SQL que une las categorías y los productos
+       cursor.execute("""
+          SELECT 
+             c.category_name, 
+             p.products_name
+           FROM 
+            intermediate i
+          INNER JOIN 
+             category c ON i.category_id = c.category_id
+          INNER JOIN 
+              products p ON i.products_id = p.products_id
+        ORDER BY 
+    c.category_name, p.products_name;
+;
+       """)
+      
+       # Obtén todos los resultados de la consulta
+       results = cursor.fetchall()
+      
+       # Cierra el cursor y la conexión a la base de datos
+       cursor.close()
+       db.close()
+      
+       # Si no se encontraron resultados
+       if not results:
+           return jsonify({"message": "No se encontro la categoria con productos"}), 404
+      
+       # Devuelve los resultados en formato JSON
+       return jsonify(results)
+  
+   except Exception as e:
+       # Maneja cualquier error y devuelve un mensaje adecuado
+       return jsonify({"error": str(e)}), 500
+
+
+
 
 
 # Ruta para actualizar un producto, endpoint PUT -- Mary
