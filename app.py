@@ -34,7 +34,7 @@ CORS(app)  # Habilita CORS para todas las rutas de todos los orígenes
 app.teardown_appcontext(cerrarConexion)
 CORS(app)  # permite peticiones desde React
 
-@app.route('/api/products', methods=['GET']) # Listar productos -- Lu
+@app.route('/products', methods=['GET']) # Listar productos -- Lu
 def list_products():
     db = abrirConexion()
     cursor = db.cursor(dictionary=True)
@@ -233,7 +233,12 @@ def crear_preferencia():
         preference = preference_response["response"]
 
         # Devuelvo el ID de la preferencia para usarlo en el frontend
-        return jsonify({"id": preference.get("id")})
+        return jsonify({"id": preference.get("id"),
+            "init_point": preference.get("init_point"),            # URL para redirigir al checkout real
+            "sandbox_init_point": preference.get("sandbox_init_point"),  # URL de sandbox
+            "items": preference.get("items"),
+            "status": preference.get("status")})
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
