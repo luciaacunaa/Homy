@@ -10,9 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "fdir": "^6.5.0",
     "cors": "^2.8.5",
+    "fdir": "^6.5.0",
     "lucide-react": "^0.543.0",
+    "mercadopago": "^2.9.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-icons": "^5.5.0",
