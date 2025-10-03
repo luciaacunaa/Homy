@@ -31,7 +31,7 @@ function PromocionesModal({ open, onClose, images }) {
   );
 }
 import { Search, ShoppingCart, MapPin, User, ChevronDown } from "lucide-react";
-import { FaGripLines } from "react-icons/fa";
+import { FaGripLines, FaPowerOff } from "react-icons/fa";
 import { CiDiscount1 } from "react-icons/ci";
 import { MdPayment } from "react-icons/md";
 import { GrMapLocation } from "react-icons/gr";
@@ -117,15 +117,15 @@ export default function Header({ onCartClick, onLoginClick, user, onLogout }) {
                  </div>
                )}
                {user ? (
-                 <>
-                   <button className="header-btn header-btn-alignment" style={{ fontWeight: 'bold', color: '#48601c' }}>
-                     <User size={18} />
-                     <span> {user.customers_name}</span>
-                   </button>
-                   <button className="header-btn header-btn-alignment" onClick={onLogout} style={{ marginLeft: 8, color: '#b22222', fontWeight: 'bold' }}>
-                     Cerrar sesión
-                   </button>
-                 </>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <button className="header-btn header-btn-alignment" style={{ fontWeight: 'bold', color: '#48601c' }}>
+                    <User size={18} />
+                    <span> {user.customers_name}</span>
+                  </button>
+                  <button className="logout-icon-btn" onClick={onLogout} title="Cerrar sesión">
+                    <FaPowerOff size={15} />
+                  </button>
+                </div>
                ) : (
                  <button className="header-btn header-btn-alignment" onClick={onLoginClick}>
                    <User size={18} />
@@ -138,6 +138,7 @@ export default function Header({ onCartClick, onLoginClick, user, onLogout }) {
              </div>
      </nav>
      {/* Íconos de acciones */}
+
     
    </header>
  );

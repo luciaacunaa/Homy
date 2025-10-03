@@ -1,6 +1,7 @@
 .product-container {
   padding: 20px;
   font-family: Arial, sans-serif;
+  color: azure;
 
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -16,10 +17,10 @@
 }
 
 .product-card {
-  border: 1px solid #ccc;
+  border: 2px solid  #334413;
   border-radius: 10px;
   padding: 15px;
-  background: #fff;
+  background:  #48601c;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
