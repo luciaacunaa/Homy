@@ -1,4 +1,31 @@
-/* Header.css  */
+.logout-floating-container {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  position: absolute;
+  top: 132px;
+  right: 35px;
+  z-index: 100;
+  padding-right: 2.5rem;
+}
+
+.logout-icon-btn {
+  background: #fff4e0;
+  color: #b22222;
+  border: 1.5px solid #b22222;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px #ddd5b2c9;
+  padding: 4px;
+  margin-left: 18px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 26px;
+  width: 26px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
 
 body{background-color: #fffbeb;}
 
