@@ -1,16 +1,30 @@
 import React, { useState } from 'react';
 import './cart.css';
 import { MdOutlineShoppingCart } from "react-icons/md";
+import { FaRegTrashCan } from "react-icons/fa6";
 
-function Cart({ onClose, visible, items = [], goToCheckout }) {
+// Componente Cart
+// Props relevantes:
+//  - onClose: función para cerrar el carrito
+//  - visible: boolean para mostrar/ocultar
+//  - items: array con productos
+//  - goToCheckout: navegar al checkout
+//  - onClear: función (desde App) que vacía todo el carrito
+
+function Cart({ onClose, visible, items = [], goToCheckout, onClear }) {
   if (!visible) return null;
 
 
   return (
     <div className={`cart-container${visible ? ' cart-visible' : ''}`}>
-      <div className="cart-header">
+      <div className="cart-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <h3>Mi Carrito</h3>
-        <button className="cart-close" onClick={onClose}>×</button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          {/* Botón para vaciar el carrito: llama a onClear (definido en App) */}
+          <button className="cart-clear" onClick={onClear} title="Vaciar carrito"><FaRegTrashCan /></button>
+          {/* Botón para cerrar el drawer del carrito */}
+          <button className="cart-close" onClick={onClose} title="Cerrar">×</button>
+        </div>
       </div>
       {items.length > 0 ? (
 

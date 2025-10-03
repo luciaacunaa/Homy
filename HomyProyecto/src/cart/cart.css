@@ -67,6 +67,31 @@
 .cart-close:hover {
   color: #58612c;
 }
+
+/* Botón para vaciar el carrito (mismo estilo que la cruz) */
+.cart-clear {
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  color: #48601c;
+  cursor: pointer;
+  margin-left: 6px;
+  transition: color 0.2s;
+}
+.cart-clear:hover {
+  color: #58612c;
+}
+
+/* Comentario: .cart-clear usa los mismos colores que .cart-close
+   para mantener consistencia visual. El icono SVG dentro del botón
+   se ajusta abajo para que tenga buen tamaño y alineación. */
+
+/* Ajuste del icono SVG dentro del botón limpiar */
+.cart-clear svg {
+  width: 22px;
+  height: 22px;
+  display: inline-block;
+}
 .cart-empty {
   display: flex;
   flex-direction: column;

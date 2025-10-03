@@ -64,6 +64,11 @@ function App() {
     window.location.reload();
   };
 
+  // Vaciar carrito
+  // Esta función limpia el estado de `cartItems`. El efecto `useEffect`
+  // guarda automáticamente el arreglo vacío en localStorage.
+  const clearCart = () => setCartItems([]);
+
   return (
     <>
       <Header
@@ -81,12 +86,19 @@ function App() {
         }}
       />
       )}
-       
       <Routes>
         <Route
           path="/"
           element={
             <>
+              {/* Componente Cart:
+                  Props principales:
+                    - onClose: cierra la vista del carrito
+                    - visible: si el drawer está abierto
+                    - items: lista de productos en el carrito
+                    - goToCheckout: navega a /checkout
+                    - onClear: función para vaciar todo el carrito (clearCart)
+              */}
               <Cart
                 onClose={() => setCartVisible(false)}
                 visible={cartVisible}
@@ -95,6 +107,7 @@ function App() {
                   setCartVisible(false);
                   navigate("/checkout");
                 }}
+                onClear={clearCart}
               />
               <ProductList
                 addToCart={addToCart}
@@ -119,8 +132,6 @@ function App() {
           element={<Checkout cartItems={cartItems} />}
         />
       </Routes>
-
-      
     </>
   );
 }
