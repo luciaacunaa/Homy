@@ -4,7 +4,7 @@ from flask import Flask, g, request, jsonify
 from flask_cors import CORS 
 from dotenv import load_dotenv
 from datetime import datetime
-import mercadopago
+import mercadopago   
 # Agrega credenciales
 sdk = mercadopago.SDK("APP_USR-4690612447740135-100209-172bfed90c4a08167a042ed317ae801b-1260263239")
 load_dotenv(".env/paty.env")  # Carga las variables de entorno desde el archivo .env
@@ -156,6 +156,23 @@ def categoria_con_productos():
 
 
 
+# Nuevo endpoint para listar todas las categorías (id y nombre)
+@app.route('/api/categories', methods=['GET'])
+def list_all_categories():
+    try:
+        db = abrirConexion()
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("SELECT category_id, category_name FROM category ORDER BY category_name;")
+        categories = cursor.fetchall()
+        cursor.close()
+        db.close()
+
+        return jsonify(categories)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
 
 
 # Ruta para actualizar un producto, endpoint PUT -- Mary
@@ -201,7 +218,7 @@ def total_compra_seleccionados():
     db = abrirConexion()
     cursor = db.cursor(dictionary=True)
     format_strings = ','.join(['%s'] * len(productos_ids))
-    cursor.execute(f"SELECT products_id, price FROM products WHERE products_id IN ({format_strings});", tuple(productos_ids))
+    cursor.executemercadopago(f"SELECT products_id, price FROM products WHERE products_id IN ({format_strings});", tuple(productos_ids))
     productos_db = cursor.fetchall()
     cursor.close()
 
@@ -259,7 +276,7 @@ def register_user():
 def admin_get_orders():
     db = abrirConexion()
     cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM receipt;")
+    cursor.execute("SEmercadopagoLECT * FROM receipt;")
     orders = cursor.fetchall()
     receipt = orders
     cursor.close()

@@ -5,7 +5,7 @@ const ProductList = ({ addToCart, removeFromCart, cartItems }) => {
   const [products, setProducts] = useState([]); // estado para los productos
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/api/products")
+    fetch("http://127.0.0.1:5000/products")
       .then((res) => res.json())
       .then((data) => {
         console.log("Productos desde la API:", data);
