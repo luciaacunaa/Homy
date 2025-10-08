@@ -125,3 +125,22 @@ button:hover {
   align-items: center;
 }
 
+/* Dropdown de categorías */
+.categories-dropdown {
+  background: #fff4e0;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 8px;
+  min-width: 220px;
+  padding: 6px;
+}
+
+.categories-dropdown .category-item:hover {
+  background: rgba(72,96,28,0.08);
+  color: #48601c;
+}
+
+.category-item {
+  font-size: 14px;
+  color: #333;
+}
+

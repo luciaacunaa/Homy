@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 function PromocionesModal({ open, onClose, images }) {
   if (!open) return null;
@@ -39,6 +39,9 @@ import './header.css';
 
 export default function Header({ onCartClick, onLoginClick, user, onLogout }) {
   const [showMap, setShowMap] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [showCategories, setShowCategories] = useState(false);
+  const categoriesRef = useRef(null);
   const navigate = useNavigate();
   const handleOpenMap = () => setShowMap(true);
   const handleCloseMap = () => setShowMap(false);
@@ -55,9 +58,24 @@ export default function Header({ onCartClick, onLoginClick, user, onLogout }) {
              style={{ height: 64, width: 64, marginRight: 24, borderRadius: '50%', objectFit: 'cover', display: 'block', cursor: 'pointer' }}
              onClick={() => navigate('/')} 
            />
-           <button className="header-btn-alignment">
-             < FaGripLines size={15} /> Categorías
-           </button>
+           <div style={{ position: 'relative' }} ref={categoriesRef}>
+             <button className="header-btn-alignment" onClick={() => setShowCategories(s => !s)}>
+               < FaGripLines size={15} /> Categorías
+             </button>
+             {showCategories && (
+               <div className="categories-dropdown" style={{ position: 'absolute', top: '110%', left: 0, background: '#fff4e0', borderRadius: 8, boxShadow: '0 4px 16px rgba(0,0,0,0.2)', zIndex: 1000, minWidth: 200, padding: 8 }}>
+                 {categories.length === 0 ? (
+                   <div style={{ padding: 8, color: '#666' }}>Cargando...</div>
+                 ) : (
+                   categories.map(cat => (
+                     <div key={cat.category_id} className="category-item" onClick={() => { setShowCategories(false); navigate(`/category/${cat.category_id}`); }} style={{ padding: '8px 12px', cursor: 'pointer', borderRadius: 6 }}>
+                       {cat.category_name}
+                     </div>
+                   ))
+                 )}
+               </div>
+             )}
+           </div>
            <button className="header-btn-alignment" onClick={handleOpenPromos}>
              <CiDiscount1 size={18} />  Promociones
            </button>
