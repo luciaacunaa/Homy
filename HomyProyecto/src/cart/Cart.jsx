@@ -11,7 +11,8 @@ import { FaRegTrashCan } from "react-icons/fa6";
 //  - goToCheckout: navegar al checkout
 //  - onClear: función (desde App) que vacía todo el carrito
 
-function Cart({ onClose, visible, items = [], goToCheckout, onClear }) {
+// Ahora Cart recibe addToCart y removeFromCart como props
+function Cart({ onClose, visible, items = [], goToCheckout, onClear, addToCart, removeFromCart }) {
   if (!visible) return null;
 
 
@@ -33,8 +34,13 @@ function Cart({ onClose, visible, items = [], goToCheckout, onClear }) {
             {items.map((item, idx) => {
               const price = Number(item.price);
               return (
-                <div key={idx} className="cart-item">
-                  {item.name} - ${price} x {item.quantity}
+                <div key={idx} className="cart-item" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                  <span>{item.name} - ${price}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <button onClick={() => removeFromCart(item)} style={{ padding: '2px 8px' }}>-</button>
+                    <span>{item.quantity}</span>
+                    <button onClick={() => addToCart(item)} style={{ padding: '2px 8px' }}>+</button>
+                  </div>
                 </div>
               );
             })}

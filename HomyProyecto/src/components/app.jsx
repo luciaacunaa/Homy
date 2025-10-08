@@ -137,6 +137,8 @@ function App() {
                   navigate("/checkout");
                 }}
                 onClear={clearCart}
+                addToCart={addToCart} /* Nueva prop, sirve para los botones de carri*/
+                removeFromCart={removeFromCart}
               />
               <ProductList
                 addToCart={addToCart}
