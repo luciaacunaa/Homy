@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from datetime import datetime
 import mercadopago
 # Agrega credenciales
-sdk = mercadopago.SDK("APP_USR-4690612447740135-100209-172bfed90c4a08167a042ed317ae801b-1260263239")
+sdk = mercadopago.SDK("APP_USR-471209528918940-100214-a50aab594363a512d52801e6932a1476-2901185714")
 load_dotenv(".env/paty.env")  # Carga las variables de entorno desde el archivo .env
 secret_key = os.getenv("SECRET_KEY")
 
@@ -273,19 +273,17 @@ def admin_get_orders():
 
 @app.route('/crear_preferencia', methods=['POST'])
 def crear_preferencia(): 
-    try:
+    try: 
+        data = request.get_json() # Obtengo los datos del frontend
+        items = data.get("items", []) # Lista de items con nombre, cantidad, precio unit
+
         preference_data = {
-            "items": [
-                {
-                    "title": "Mi producto",
-                    "quantity": 1,
-                    "unit_price": 75.76,
-                }
-            ]
+            "items" : items
         }
 
         preference_response = sdk.preference().create(preference_data)
         preference = preference_response["response"]
+        print (jsonify(preference))
 
         # Devuelvo el ID de la preferencia para usarlo en el frontend
         return jsonify({"id": preference.get("id"),

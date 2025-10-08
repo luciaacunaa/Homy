@@ -10,7 +10,7 @@ const Checkout = ({ cartItems }) => {
 
   // Inicializar Mercado Pago
   useEffect(() => {
-    initMercadoPago("APP_USR-7610dbf7-d47c-4b8e-b568-7865b3ef3e95");
+    initMercadoPago("APP_USR-45709760-c0b0-4e36-941c-27008e49bf53");
   }, []);
 
   // Calcular total pidiendo a backend
@@ -43,7 +43,8 @@ const Checkout = ({ cartItems }) => {
       });
   }, [cartItems]);
 
-  // Crear preferencia cuando ya tengo total
+  // Crear preferencia cuando ya tengo total, fetch al backend. El backend hace fetch a MP, 
+  //modifique el endpoint /crear_preferencia en app.py para que reciba items
   useEffect(() => {
     if (total > 0) {
       const createPreference = async () => {
@@ -52,13 +53,11 @@ const Checkout = ({ cartItems }) => {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              items: [
-                {
-                  title: "Compra en Homy",
-                  quantity: 1,
-                  unit_price: total,
-                },
-              ],
+              items: cartItems.map(item => ({
+                title: item.name,
+                quantity: item.quantity,
+                unit_price: Number(item.price),
+              })),
             }),
           });
 
@@ -74,7 +73,7 @@ const Checkout = ({ cartItems }) => {
 
       createPreference();
     }
-  }, [total]);
+  }, [total, cartItems]);
 
   return (
     <div className="checkout-container" style={{ position: "relative" }}>
