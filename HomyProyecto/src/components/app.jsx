@@ -91,15 +91,37 @@ function App() {
         <Route
           path="/"
           element={
-            <div style={{ padding: "2rem", textAlign: "center" }}>
-              <Carousel
-                images={[
-                  "/carousel/2.jpg",
-                  "/carousel/3.jpg",
-                  "/carousel/1.jpeg",
-                ]}
-              />
-            </div>
+            <>
+              <div style={{ padding: "2rem", textAlign: "center" }}>
+                <Carousel
+                  images={[
+                    "/carousel/2.jpg",
+                    "/carousel/3.jpg",
+                    "/carousel/1.jpeg",
+                  ]}
+                />
+              </div>
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  marginTop: "2rem",
+                  marginLeft: "2rem",
+                }}
+              >
+                <img
+                  src="/promos/logo grande.PNG"
+                  alt="Logo Homy"
+                  style={{
+                    height: 220,
+                    width: 220,
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                />
+              </div>
+            </>
           }
         />
         <Route
