@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
-
 import Header from "../components/Header";
 import Cart from "../cart/Cart";
 import ProductList from "./grilla/grilla";
 import Checkout from "./Checkout";
+import AdminOrders from "./AdminOrders";
 import Login from "../login/login";
 import Promociones from "./Promociones";
 import Carousel from "../components/carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-
 function App() {
   const navigate = useNavigate();
 
@@ -26,8 +25,12 @@ function App() {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  // Agregar producto al carrito
+  // Agregar producto al carrito solo si el usuario está logueado
   const addToCart = (product) => {
+    if (!user) {
+      setLoginVisible(true);
+      return;
+    }
     setCartItems((prev) => {
       const found = prev.find((item) => item.id === product.id);
       if (found) {
@@ -70,6 +73,21 @@ function App() {
   // guarda automáticamente el arreglo vacío en localStorage.
   const clearCart = () => setCartItems([]);
 
+  if (loginVisible) {
+    return (
+      <Login
+        onClose={() => setLoginVisible(false)}
+        onLoginSuccess={(userData) => {
+          setUser(userData);
+          setLoginVisible(false);
+          if (userData.is_admin) {
+            navigate("/admin/orders");
+          }
+        }}
+      />
+    );
+  }
+
   return (
     <>
       <Header
@@ -78,16 +96,7 @@ function App() {
         user={user}
         onLogout={handleLogout}
       />
-      {loginVisible && (
-        <Login
-          onClose={() => setLoginVisible(false)}
-          onLoginSuccess={(userData) => {
-            setUser(userData);
-            setLoginVisible(false);
-          }}
-        />
-      )}
-      <Routes>
+  <Routes>
         <Route
           path="/"
           element={
@@ -137,7 +146,7 @@ function App() {
                   navigate("/checkout");
                 }}
                 onClear={clearCart}
-                addToCart={addToCart} /* Nueva prop, sirve para los botones de carri*/
+                addToCart={addToCart}
                 removeFromCart={removeFromCart}
               />
               <ProductList
@@ -161,6 +170,18 @@ function App() {
           }
         />
         <Route path="/checkout" element={<Checkout cartItems={cartItems} />} />
+        <Route
+          path="/admin/orders"
+          element={
+            user && user.is_admin ? (
+              <AdminOrders />
+            ) : (
+              <div style={{ padding: "2rem", color: "red" }}>
+                Acceso denegado. Solo el administrador puede ver los pedidos.
+              </div>
+            )
+          }
+        />
       </Routes>
     </>
   );

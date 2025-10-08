@@ -218,7 +218,7 @@ def total_compra_seleccionados():
     db = abrirConexion()
     cursor = db.cursor(dictionary=True)
     format_strings = ','.join(['%s'] * len(productos_ids))
-    cursor.executemercadopago(f"SELECT products_id, price FROM products WHERE products_id IN ({format_strings});", tuple(productos_ids))
+    cursor.execute(f"SELECT products_id, price FROM products WHERE products_id IN ({format_strings});", tuple(productos_ids))
     productos_db = cursor.fetchall()
     cursor.close()
 
@@ -276,7 +276,7 @@ def register_user():
 def admin_get_orders():
     db = abrirConexion()
     cursor = db.cursor(dictionary=True)
-    cursor.execute("SEmercadopagoLECT * FROM receipt;")
+    cursor.execute("SELECT * FROM receipt;")
     orders = cursor.fetchall()
     receipt = orders
     cursor.close()

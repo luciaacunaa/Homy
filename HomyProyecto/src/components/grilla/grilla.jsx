@@ -8,8 +8,13 @@ const ProductList = ({ addToCart, removeFromCart, cartItems }) => {
     fetch("http://127.0.0.1:5000/products")
       .then((res) => res.json())
       .then((data) => {
-        console.log("Productos desde la API:", data);
-        setProducts(data); // guardamos productos en el estado
+        // Mapear para asegurar que cada producto tenga un campo 'id'
+        const productosConId = data.map((prod) => ({
+          ...prod,
+          id: prod.products_id, // Usar products_id como id universal
+          name: prod.products_name // Usar products_name como name universal
+        }));
+        setProducts(productosConId);
       })
       .catch((err) => console.error("Error al traer productos:", err));
   }, []);
@@ -20,9 +25,9 @@ const ProductList = ({ addToCart, removeFromCart, cartItems }) => {
       <div className="product-container">
         {products.length > 0 ? (
           products.map((product) => (
-            <div key={product.products_id} className="product-card">
+            <div key={product.id} className="product-card">
               {product.image && <img src={product.image} alt={product.name} />}
-              <h2>{product.products_name}</h2>
+              <h2>{product.name}</h2>
               <p>{product.description}</p>
               <p>
                 <strong>Precio:</strong> ${product.price}
