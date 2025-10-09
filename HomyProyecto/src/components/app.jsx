@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { FaInstagram, FaWhatsapp } from "react-icons/fa";
+import { MdOutlineMail } from "react-icons/md";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Cart from "../cart/Cart";
@@ -7,7 +9,9 @@ import Checkout from "./Checkout";
 import AdminOrders from "./AdminOrders";
 import Login from "../login/login";
 import Promociones from "./Promociones";
+import PaymentMethods from "./PaymentMethods";
 import Carousel from "../components/carousel";
+import Footer from "../components/Footer";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 function App() {
   const navigate = useNavigate();
@@ -95,6 +99,7 @@ function App() {
         onLoginClick={() => setLoginVisible(true)}
         user={user}
         onLogout={handleLogout}
+        onPaymentClick={() => navigate('/payment')}
       />
   <Routes>
         <Route
@@ -114,9 +119,10 @@ function App() {
                 style={{
                   width: "100%",
                   display: "flex",
-                  justifyContent: "flex-start",
+                  alignItems: "center",
+                  justifyContent: "center",
                   marginTop: "2rem",
-                  marginLeft: "2rem",
+                  gap: "2.5rem",
                 }}
               >
                 <img
@@ -129,10 +135,22 @@ function App() {
                     objectFit: "cover",
                   }}
                 />
+                  <div style={{ maxWidth: "500px", textAlign: "left", background: "#f5edce", padding: "1.5rem 2rem", borderRadius: "1rem", boxShadow: "0 2px 8px rgba(0,0,0,0.07)" }}>
+                    <h2 style={{ marginTop: 0, color: "#48601c" }}>Sobre nosotros</h2>
+                    <p style={{ fontSize: "1.1rem", color: "#444" }}>
+                      En Homy, nos apasiona ayudarte a crear espacios únicos y acogedores. Ofrecemos una cuidada selección de muebles y decoración para transformar tu hogar en el lugar de tus sueños. Nuestro equipo está comprometido con la calidad, el diseño y la atención personalizada. ¡Gracias por confiar en nosotros para acompañarte en cada rincón de tu casa!
+                    </p>
+                    <div style={{ display: "flex", justifyContent: "center", gap: "1.5rem", marginTop: "1.5rem", fontSize: "2rem", color: "#48601c", alignItems: "center" }}>
+                      <FaInstagram style={{ cursor: "pointer" }} />
+                      <FaWhatsapp style={{ cursor: "pointer" }} />
+                      <MdOutlineMail style={{ cursor: "pointer" }} />
+                    </div>
+                  </div>
               </div>
             </>
           }
         />
+        <Route path="/payment" element={<PaymentMethods />} />
         <Route
           path="/products"
           element={
@@ -183,6 +201,7 @@ function App() {
           }
         />
       </Routes>
+      <Footer />
     </>
   );
 }

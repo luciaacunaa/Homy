@@ -46,6 +46,7 @@ export default function Header({ onCartClick, onLoginClick, user, onLogout }) {
   const handleOpenMap = () => setShowMap(true);
   const handleCloseMap = () => setShowMap(false);
   const handleOpenPromos = () => navigate('/promotions');
+  const handleOpenPayment = () => navigate('/payment');
   return (
    <header className="header">
      <nav className="nav-container">
@@ -79,7 +80,7 @@ export default function Header({ onCartClick, onLoginClick, user, onLogout }) {
            <button className="header-btn-alignment" onClick={handleOpenPromos}>
              <CiDiscount1 size={18} />  Promociones
            </button>
-           <button className="header-btn-alignment"><MdPayment  size={18}/>  Medios de pago</button>
+           <button className="header-btn-alignment" onClick={handleOpenPayment}><MdPayment  size={18}/>  Medios de pago</button>
          </div>
 
 
