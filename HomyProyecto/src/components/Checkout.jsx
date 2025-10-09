@@ -45,65 +45,24 @@ const Checkout = ({ cartItems }) => {
 
   // Crear preferencia cuando ya tengo total, fetch al backend. El backend hace fetch a MP, 
   //modifique el endpoint /crear_preferencia en app.py para que reciba items
-   useEffect(() => {
-    if (cartItems.length > 0) {
-      const totalAmount = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-      setTotal(totalAmount);
 
-      const createPreference = async () => {
-        try {
-          const response = await fetch("http://127.0.0.1:5000/crear_preferencia", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              items: cartItems.map(item => ({
-                title: item.name,
-                quantity: item.quantity,
-                unit_price: Number(item.price),
-              })),
-            }),
-          });
+  useEffect(() => {
+    if (cartItems.length === 0 || total <= 0) return;
 
-          const data = await response.json();
-          if (data.id) {
-            setPreferenceId(data.id);
-            console.log("✅ Preferencia creada:", data);
-          } else {
-            console.error("❌ Error en preferencia:", data);
-          }
-        } catch (err) {
-          console.error("Error al crear preferencia:", err);
-        }
-      };
+    const crearPreferencia = async () => {
+      setLoading(true);
+      setError("");
 
-      createPreference();
-    }
-  }, [cartItems]);
-   useEffect(() => {
-    if (cartItems.length === 0) {
-      setTotal(0);
-      setPreferenceId(null);
-      setLoading(false);
-      return;
-    }
+      console.log("💰 Total enviado al backend:", total, cartItems);
 
-    const totalAmount = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-    setTotal(totalAmount);
-
-    const createPreference = async () => {
       try {
-        setLoading(true);
-        setError("");
-
         const response = await fetch("http://127.0.0.1:5000/crear_preferencia", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            items: cartItems.map(item => ({
-              title: item.name,
-              quantity: item.quantity,
-              unit_price: Number(item.price),
-            })),
+            title: "Compra en mi tienda",
+            quantity: 1,
+            price: total,
           }),
         });
 
@@ -111,21 +70,20 @@ const Checkout = ({ cartItems }) => {
 
         if (data.id) {
           setPreferenceId(data.id);
-          console.log("✅ Preferencia creada:", data);
         } else {
           setError("No se pudo crear la preferencia.");
-          console.error("❌ Error en preferencia:", data);
+          console.error("Error:", data);
         }
       } catch (err) {
-        setError("Error al crear la preferencia.");
-        console.error("❌ Error al crear preferencia:", err);
+        console.error("Error al conectar con el servidor:", err);
+        setError("Error al conectar con el servidor.");
       } finally {
         setLoading(false);
       }
     };
 
-    createPreference();
-  }, [cartItems]);
+    crearPreferencia();
+  }, [cartItems, total]);
 
   return (
     <div className="checkout-container" style={{ position: "relative" }}>
@@ -142,8 +100,10 @@ const Checkout = ({ cartItems }) => {
           <ul className="checkout-list">
             {cartItems.map((item, idx) => (
               <li key={idx}>
-                <span>{item.name} x {item.quantity}</span>
-                <span>${Number(item.price) * item.quantity}</span>
+                <span>
+                  {item.name} x {item.quantity}
+                </span>
+                <span>${Number(item.price) * Number(item.quantity)}</span>
               </li>
             ))}
           </ul>
@@ -165,7 +125,5 @@ const Checkout = ({ cartItems }) => {
       )}
     </div>
   );
-};
-
-
+}
 export default Checkout;

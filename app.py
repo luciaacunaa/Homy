@@ -288,39 +288,49 @@ def admin_get_orders():
 # Crea un ítem en la preferencia
 #ruta para crear la preferencia de pago
 
-@app.route('/crear_preferencia', methods=['POST'])
-def crear_preferencia(): 
-    try: 
+@app.route("/crear_preferencia", methods=["POST"])
+def crear_preferencia():
+    try:
         data = request.get_json()
-        items = data.get("items", [])
+        print("📦 Datos recibidos del frontend:", data)
+
+        title = data.get("title", "Producto genérico")
+        quantity = int(data.get("quantity", 1))
+        price = float(data.get("price", 0))
+
+        if price <= 0:
+            return jsonify({"error": "El precio debe ser mayor a 0"}), 400
 
         preference_data = {
-            "items": items,
-            "payer": {
-                "email": "TESTUSER6739714237306557481"
-            },
-            "back_urls": {
-                "success": "http://localhost:3000/success",
-                "failure": "http://localhost:3000/failure",
-                "pending": "http://localhost:3000/pending"
-            },
-            "auto_return": "approved"
+            "items": [
+                {
+                    "title": title,
+                    "quantity": quantity,
+                    "unit_price": price,
+                    "currency_id": "ARS"
+                }
+            ],
+           "back_urls": {
+        "success": "https://www.tu-sitio/success",
+        "failure": "https://www.tu-sitio/failure",
+        "pending": "https://www.tu-sitio/pendings"
+    },
+    "auto_return": "approved"
         }
 
         preference_response = sdk.preference().create(preference_data)
-        preference = preference_response["response"]
-        print("✅ Preferencia creada:", preference)
+        print("🧾 Respuesta de MP:", preference_response)
 
-        return jsonify({
-            "id": preference.get("id"),
-            "sandbox_init_point": preference.get("sandbox_init_point")
-        })
+        if "response" not in preference_response or "id" not in preference_response["response"]:
+            return jsonify({"error": "Error al crear preferencia", "details": preference_response}), 500
+
+        preference = preference_response["response"]
+        return jsonify({"id": preference["id"]})
 
     except Exception as e:
-        print("❌ Error al crear preferencia:", e)
+        print("Error al crear la preferencia:", e)
         return jsonify({"error": str(e)}), 500
-
-
+    
 #Todo tien que ir arriba de este if
 if __name__ == "__main__":
     app.run(debug=True)  # Totalmente necesario correr la pag con flask run --debug
