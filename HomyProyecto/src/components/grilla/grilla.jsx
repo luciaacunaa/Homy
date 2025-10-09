@@ -27,13 +27,8 @@ const ProductList = ({ addToCart, removeFromCart, cartItems }) => {
           products.map((product) => (
             <div key={product.id} className="product-card">
               {product.image && <img src={product.image} alt={product.name} />}
-<<<<<<< HEAD
-              <h2>{product.name}</h2>
-              <p>{product.description}</p>
-=======
               
               <p>{product.products_name}</p>
->>>>>>> 7881e0eab03aca4cc05c23758d895d7b9949df5a
               <p>
                 <strong>Precio:</strong> ${product.price}
               </p>
