@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from datetime import datetime
 import mercadopago   
 # Agrega credenciales
-sdk = mercadopago.SDK("APP_USR-471209528918940-100214-a50aab594363a512d52801e6932a1476-2901185714")
+sdk = mercadopago.SDK("APP_USR-7798932195313209-100910-463a1fb5da375d86b110528f4d743463-2915372376")
 load_dotenv(".env/paty.env")  # Carga las variables de entorno desde el archivo .env
 secret_key = os.getenv("SECRET_KEY")
 
@@ -291,25 +291,33 @@ def admin_get_orders():
 @app.route('/crear_preferencia', methods=['POST'])
 def crear_preferencia(): 
     try: 
-        data = request.get_json() # Obtengo los datos del frontend
-        items = data.get("items", []) # Lista de items con nombre, cantidad, precio unit
+        data = request.get_json()
+        items = data.get("items", [])
 
         preference_data = {
-            "items" : items
+            "items": items,
+            "payer": {
+                "email": "TESTUSER6739714237306557481"
+            },
+            "back_urls": {
+                "success": "http://localhost:3000/success",
+                "failure": "http://localhost:3000/failure",
+                "pending": "http://localhost:3000/pending"
+            },
+            "auto_return": "approved"
         }
 
         preference_response = sdk.preference().create(preference_data)
         preference = preference_response["response"]
-        print (jsonify(preference))
+        print("✅ Preferencia creada:", preference)
 
-        # Devuelvo el ID de la preferencia para usarlo en el frontend
-        return jsonify({"id": preference.get("id"),
-            "init_point": preference.get("init_point"),            # URL para redirigir al checkout real
-            "sandbox_init_point": preference.get("sandbox_init_point"),  # URL de sandbox
-            "items": preference.get("items"),
-            "status": preference.get("status")})
+        return jsonify({
+            "id": preference.get("id"),
+            "sandbox_init_point": preference.get("sandbox_init_point")
+        })
 
     except Exception as e:
+        print("❌ Error al crear preferencia:", e)
         return jsonify({"error": str(e)}), 500
 
 
