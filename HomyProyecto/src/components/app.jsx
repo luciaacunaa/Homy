@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { RiPencilFill } from "react-icons/ri";
 import { FaInstagram, FaWhatsapp } from "react-icons/fa";
 import { MdOutlineMail } from "react-icons/md";
 import { Routes, Route, useNavigate } from "react-router-dom";
@@ -23,6 +24,16 @@ function App() {
     const saved = localStorage.getItem("cartItems");
     return saved && saved !== "[]" ? JSON.parse(saved) : [];
   });
+  // Estado para edición de 'Sobre nosotros'
+  const [editAbout, setEditAbout] = useState(false);
+  const [aboutText, setAboutText] = useState("En Homy, nos apasiona ayudarte a crear espacios únicos y acogedores. Ofrecemos una cuidada selección de muebles y decoración para transformar tu hogar en el lugar de tus sueños. Nuestro equipo está comprometido con la calidad, el diseño y la atención personalizada. ¡Gracias por confiar en nosotros para acompañarte en cada rincón de tu casa!");
+  const [aboutTextBackup, setAboutTextBackup] = useState("En Homy, nos apasiona ayudarte a crear espacios únicos y acogedores. Ofrecemos una cuidada selección de muebles y decoración para transformar tu hogar en el lugar de tus sueños. Nuestro equipo está comprometido con la calidad, el diseño y la atención personalizada. ¡Gracias por confiar en nosotros para acompañarte en cada rincón de tu casa!");
+
+  const handleSaveAbout = () => {
+    setEditAbout(false);
+    setAboutTextBackup(aboutText);
+    // Aquí podrías agregar lógica para guardar el texto en backend si lo deseas
+  };
 
   // Guardar carrito en localStorage cada vez que cambia
   useEffect(() => {
@@ -136,10 +147,33 @@ function App() {
                   }}
                 />
                   <div style={{ maxWidth: "500px", textAlign: "left", background: "#f5edce", padding: "1.5rem 2rem", borderRadius: "1rem", boxShadow: "0 2px 8px rgba(0,0,0,0.07)" }}>
-                    <h2 style={{ marginTop: 0, color: "#48601c" }}>Sobre nosotros</h2>
-                    <p style={{ fontSize: "1.1rem", color: "#444" }}>
-                      En Homy, nos apasiona ayudarte a crear espacios únicos y acogedores. Ofrecemos una cuidada selección de muebles y decoración para transformar tu hogar en el lugar de tus sueños. Nuestro equipo está comprometido con la calidad, el diseño y la atención personalizada. ¡Gracias por confiar en nosotros para acompañarte en cada rincón de tu casa!
-                    </p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <h2 style={{ marginTop: 0, color: "#48601c", marginBottom: 0 }}>Sobre nosotros</h2>
+                      {user?.is_admin && (
+                        <button
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#48601c', fontSize: '1.3rem', padding: 0 }}
+                          onClick={() => setEditAbout(true)}
+                          title="Editar texto"
+                        >
+                          <RiPencilFill />
+                        </button>
+                      )}
+                    </div>
+                    {editAbout ? (
+                      <>
+                        <textarea
+                          value={aboutText}
+                          onChange={e => setAboutText(e.target.value)}
+                          style={{ width: '100%', minHeight: '100px', fontSize: '1.1rem', color: '#444', marginTop: '0.5rem', borderRadius: '0.5rem', padding: '0.5rem' }}
+                        />
+                        <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
+                          <button onClick={handleSaveAbout} style={{ background: '#48601c', color: '#fff', border: 'none', borderRadius: '0.5rem', padding: '0.5rem 1rem', cursor: 'pointer' }}>Guardar</button>
+                          <button onClick={() => { setEditAbout(false); setAboutText(aboutTextBackup); }} style={{ background: '#ccc', color: '#222', border: 'none', borderRadius: '0.5rem', padding: '0.5rem 1rem', cursor: 'pointer' }}>Cancelar</button>
+                        </div>
+                      </>
+                    ) : (
+                      <p style={{ fontSize: "1.1rem", color: "#444" }}>{aboutText}</p>
+                    )}
                     <div style={{ display: "flex", justifyContent: "center", gap: "1.5rem", marginTop: "1.5rem", fontSize: "2rem", color: "#48601c", alignItems: "center" }}>
                       <FaInstagram style={{ cursor: "pointer" }} />
                       <FaWhatsapp style={{ cursor: "pointer" }} />
