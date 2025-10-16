@@ -2,17 +2,18 @@ import React, { useEffect, useState } from "react";
 import "./grilla.css";
 
 const ProductList = ({ addToCart, removeFromCart, cartItems }) => {
-  const [products, setProducts] = useState([]); // estado para los productos
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/products")
+    fetch("http://127.0.0.1:5000/api/products") 
       .then((res) => res.json())
       .then((data) => {
-        // Mapear para asegurar que cada producto tenga un campo 'id'
         const productosConId = data.map((prod) => ({
           ...prod,
-          id: prod.products_id, // Usar products_id como id universal
-          name: prod.products_name // Usar products_name como name universal
+          id: prod.products_id,
+          name: prod.products_name,
+          image_url: `http://127.0.0.1:5000/api/image/${prod.products_id}`
+ 
         }));
         setProducts(productosConId);
       })
@@ -21,22 +22,41 @@ const ProductList = ({ addToCart, removeFromCart, cartItems }) => {
 
   return (
     <>
-      <h1 style={{ textAlign: "center", color: "#48601c" }}>Lista de Productos</h1>
+      <h1 style={{ textAlign: "center", color: "#48601c" }}>
+        Lista de Productos
+      </h1>
+
       <div className="product-container">
         {products.length > 0 ? (
           products.map((product) => (
             <div key={product.id} className="product-card">
-              {product.image && <img src={product.image} alt={product.name} />}
-              
+              {/* Mostrar la imagen si existe */}
+              <img
+                src={product.image_url}
+                alt={product.name}
+                onError={(e) => {
+                  e.target.src = "/placeholder.png"; // imagen por defecto si no hay imagen en DB
+                }}
+              />
+
               <p>{product.products_name}</p>
               <p>
                 <strong>Precio:</strong> ${product.price}
               </p>
+
               {(() => {
-                const cartItem = cartItems?.find((item) => item.id === product.id);
+                const cartItem = cartItems?.find(
+                  (item) => item.id === product.id
+                );
                 if (cartItem) {
                   return (
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}
+                    >
                       <button onClick={() => removeFromCart(product)}>-</button>
                       <span>{cartItem.quantity}</span>
                       <button onClick={() => addToCart(product)}>+</button>
@@ -44,7 +64,9 @@ const ProductList = ({ addToCart, removeFromCart, cartItems }) => {
                   );
                 } else {
                   return (
-                    <button onClick={() => addToCart(product)}>Agregar al carrito</button>
+                    <button onClick={() => addToCart(product)}>
+                      Agregar al carrito
+                    </button>
                   );
                 }
               })()}

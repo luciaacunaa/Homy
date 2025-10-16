@@ -4,7 +4,10 @@ from flask import Flask, g, request, jsonify
 from flask_cors import CORS 
 from dotenv import load_dotenv
 from datetime import datetime
+from flask import send_file
+from io import BytesIO
 import mercadopago   
+
 # Agrega credenciales
 sdk = mercadopago.SDK("APP_USR-7798932195313209-100910-463a1fb5da375d86b110528f4d743463-2915372376")
 load_dotenv(".env/paty.env")  # Carga las variables de entorno desde el archivo .env
@@ -153,6 +156,55 @@ def categoria_con_productos():
    except Exception as e:
        # Maneja cualquier error y devuelve un mensaje adecuado
        return jsonify({"error": str(e)}), 500
+
+
+
+
+@app.route('/api/images/<int:product_id>', methods=['GET']) ##ABRIL
+def get_image(product_id):
+    try:
+        db = abrirConexion()
+        cursor = db.cursor()
+        cursor.execute("SELECT image_data, mime_type FROM images WHERE products_id = %s", (product_id,))
+        result = cursor.fetchone()
+        cursor.close()
+        db.close()
+
+        if result and result[0]:
+            image_data, mime_type = result
+            return send_file(BytesIO(image_data), mimetype=mime_type)
+        else:
+            return jsonify({"error": "Imagen no encontrada"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+
+
+@app.route('/api/products', methods=['GET'])#ABI
+def get_products():
+    try:
+        cursor = g.cursor(dictionary=True)
+
+        # Traer productos y, si existe, la URL de la imagen
+        query = """
+            SELECT 
+                p.products_id, 
+                p.products_name, 
+                p.price,
+                (SELECT image_url FROM images WHERE products_id = p.products_id LIMIT 1) AS image_url
+            FROM products p
+        """
+        cursor.execute(query)
+        products = cursor.fetchall()  # Esto debe ser una lista de diccionarios
+        cursor.close()
+
+        # Asegurarse de devolver un array incluso si no hay productos
+        if products is None:
+            products = []
+
+        return jsonify(products)  # Esto ya es un array JSON
+    except Exception as e:
+        return jsonify([])  # Devuelve array vacío si hay error
 
 
 
