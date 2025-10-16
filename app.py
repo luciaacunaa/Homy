@@ -4,12 +4,15 @@ from flask import Flask, g, request, jsonify
 from flask_cors import CORS 
 from dotenv import load_dotenv
 from datetime import datetime
-import mercadopago   
+import mercadopago  
+from functools import wraps
+
+
 # Agrega credenciales
 sdk = mercadopago.SDK("APP_USR-7798932195313209-100910-463a1fb5da375d86b110528f4d743463-2915372376")
 load_dotenv(".env/paty.env")  # Carga las variables de entorno desde el archivo .env
 secret_key = os.getenv("SECRET_KEY")
-
+app = Flask(__name__)
 
 def abrirConexion():
     if 'db' not in g:
@@ -27,12 +30,11 @@ def cerrarConexion(e=None):
     if db is not None and db.is_connected():
         db.close()
 
-app = Flask(__name__)
+
 
 CORS(app)  # Habilita CORS para todas las rutas de todos los orígenes
-
 app.teardown_appcontext(cerrarConexion)
-CORS(app)  # permite peticiones desde React
+
 
 @app.route('/products', methods=['GET']) # Listar productos -- Lu
 def list_products():
@@ -58,8 +60,7 @@ def login():
     db = abrirConexion()
     cursor = db.cursor(dictionary=True)
 
-
-    # Busca el usuario por email y contraseña --
+    # Busca el usuario por email y contraseña y obtiene el rol (is_admin)
     cursor.execute(
         "SELECT * FROM customers WHERE customers_email = %s AND customers_password = %s;",
         (email, password)
@@ -68,26 +69,62 @@ def login():
     cursor.close()
 
     if user:
-        return jsonify({"message": "Login exitoso", "user": user}), 200
+        # Verificamos si el usuario es admin
+        is_admin = user['is_admin']  # Esto debería ser una columna en tu tabla `customers`
+        
+        # Puedes devolver el rol del usuario junto con los demás datos del usuario
+        return jsonify({
+            "message": "Login exitoso",
+            "user": {
+                "email": user['customers_email'],
+                "name": user['customers_name'],
+                "lastname": user['customers_lastname'],
+                "address": user['customers_address'],
+                "is_admin": is_admin
+            }
+        }), 200
     else:
         return jsonify({"error": "Credenciales incorrectas"}), 401
 
+
 products = []
+
 @app.route('/api/products', methods=['POST']) # Agregar producto   -- Lu
 def agregar_producto():
     data = request.get_json()
-    name = data.get('name')
+    products_name = data.get('products_name')
     price = data.get('price')
-    
-    if not name or not price:
-        return jsonify({'error': 'Datos faltantes'}), 400
-    
-    product ={
-        'Nombre': name,
-        'Precio': price}
+    unit = data.get('unit')
+    payment_id = data.get('payment_id')
 
-    products.append(product) 
-    return jsonify({'mensaje': 'El producto fue agregado', 'Producto': product}), 201
+    # Validación de campos obligatorios
+    if not products_name or price is None or payment_id is None:
+        return jsonify({'error': 'Faltan datos obligatorios'}), 400
+
+    db = abrirConexion()
+    cursor = db.cursor()
+    try:
+        cursor.execute(
+            "INSERT INTO products (products_name, price, unit, payment_id) VALUES (%s, %s, %s, %s);",
+            (products_name, price, unit, payment_id)
+        )
+        db.commit()
+        product_id = cursor.lastrowid
+        cursor.close()
+        return jsonify({
+            'mensaje': 'El producto fue agregado',
+            'Producto': {
+                'products_id': product_id,
+                'products_name': products_name,
+                'price': price,
+                'unit': unit,
+                'payment_id': payment_id
+            }
+        }), 201
+    except Exception as e:
+        db.rollback()
+        cursor.close()
+        return jsonify({'error': str(e)}), 500
 
 
 
