@@ -30,12 +30,14 @@ function PromocionesModal({ open, onClose, images }) {
     </div>
   );
 }
+
 import { Search, ShoppingCart, MapPin, User, ChevronDown } from "lucide-react";
 import { FaGripLines, FaPowerOff } from "react-icons/fa";
 import { CiDiscount1 } from "react-icons/ci";
 import { MdPayment } from "react-icons/md";
 import { GrMapLocation } from "react-icons/gr";
 import './header.css';
+import UbicacionMapa from './ubicacion';
 
 export default function Header({ onCartClick, onLoginClick, user, onLogout }) {
   const [showMap, setShowMap] = useState(false);
@@ -121,17 +123,10 @@ export default function Header({ onCartClick, onLoginClick, user, onLogout }) {
                  }}
                    onClick={handleCloseMap}
                  >
-                   <div style={{ position: 'relative', background: '#48601c', borderRadius: 8, padding: 16, maxWidth: 600, width: '90vw', boxShadow: '0 0 0 3px #f5edce' }} onClick={e => e.stopPropagation()}>
+                   <div style={{ position: 'relative', background: '#fff', borderRadius: 8, padding: 16, maxWidth: 700, width: '90vw', boxShadow: '0 0 0 3px #f5edce', display: 'flex', flexDirection: 'column', alignItems: 'center' }} onClick={e => e.stopPropagation()}>
                      <button onClick={handleCloseMap} style={{ position: 'absolute', top: 8, right: 8, background: '#f5edce', border: 'none', fontSize: 24, cursor: 'pointer', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
-                     <div style={{ textAlign: 'center', marginBottom: 8 }}>
-                       <span style={{ color: '#f5edce', fontWeight: 'bold', fontSize: 18, display: 'inline-block', margin: '0 auto 8px auto', background: 'transparent' }}>Ubicación en Google Maps</span>
-                     </div>
-                           <div style={{ marginTop: 8, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                             <a href="https://maps.app.goo.gl/SMSZfqBYi664c8eQA" target="_blank" rel="noopener noreferrer" style={{ color: '#f5edce', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 4 }}>
-                               Ver en Google Maps
-                               <GrMapLocation style={{ marginLeft: 4, fontSize: 20 }} />
-                             </a>
-                           </div>
+                     <h2 style={{ color: '#48601c', marginBottom: 16 }}>Ubicación</h2>
+                     <UbicacionMapa />
                    </div>
                  </div>
                )}
