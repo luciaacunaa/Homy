@@ -24,6 +24,14 @@ function App() {
     return saved && saved !== "[]" ? JSON.parse(saved) : [];
   });
 
+    //Recuperar sesión del usuario al montar la app
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
+
   // Guardar carrito en localStorage cada vez que cambia
   useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
