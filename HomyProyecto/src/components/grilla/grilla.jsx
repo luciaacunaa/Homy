@@ -15,6 +15,7 @@ const ProductList = ({ addToCart, removeFromCart, cartItems }) => {
           image_url: `http://127.0.0.1:5000/image/${prod.products_id}`
  
         }));
+        console.log(data);
         setProducts(productosConId);
       })
       .catch((err) => console.error("Error al traer productos:", err));
