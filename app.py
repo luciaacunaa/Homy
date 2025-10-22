@@ -243,6 +243,30 @@ def get_products():
 
 
 
+@app.route('/api/products/search', methods=['GET']) #Abril 
+def search_products():
+    search_query = request.args.get('query', '')  # Obtener el término de búsqueda
+    try:
+        db = abrirConexion()
+        cursor = db.cursor(dictionary=True)
+        
+        query = """
+            SELECT products_id, products_name, price
+            FROM products
+            WHERE products_name LIKE %s
+        """
+        cursor.execute(query, ('%' + search_query + '%',))
+        products = cursor.fetchall()
+        cursor.close()
+        db.close()
+
+        return jsonify(products)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
+
 # Nuevo endpoint para listar todas las categorías (id y nombre)
 @app.route('/api/categories', methods=['GET'])
 def list_all_categories():
