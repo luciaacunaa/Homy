@@ -14,6 +14,7 @@ import PaymentMethods from "./PaymentMethods";
 import Carousel from "../components/carousel";
 import Footer from "../components/Footer";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
+import Reviews from "./Reviews";
 function App() {
   const navigate = useNavigate();
 
@@ -188,6 +189,9 @@ function App() {
                       <MdOutlineMail style={{ cursor: "pointer" }} />
                     </div>
                   </div>
+              </div>
+              <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                <Reviews user={user} />
               </div>
             </>
           }

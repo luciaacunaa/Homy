@@ -4,15 +4,10 @@ from flask import Flask, g, request, jsonify
 from flask_cors import CORS 
 from dotenv import load_dotenv
 from datetime import datetime
-<<<<<<< HEAD
 from flask import send_file
 from io import BytesIO
 import mercadopago   
-=======
-import mercadopago  
 from functools import wraps
-
->>>>>>> 3185b1308974cfa86799548decb70ce4d715c4f3
 
 # Agrega credenciales
 sdk = mercadopago.SDK("APP_USR-7798932195313209-100910-463a1fb5da375d86b110528f4d743463-2915372376")
