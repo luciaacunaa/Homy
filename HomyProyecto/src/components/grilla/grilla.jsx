@@ -12,12 +12,7 @@ const ProductList = ({ addToCart, removeFromCart, cartItems }) => {
           ...prod,
           id: prod.products_id,
           name: prod.products_name,
-<<<<<<< HEAD
           image_url: `http://127.0.0.1:5000/api/image/${prod.products_id}`,
-=======
-          image_url: `http://127.0.0.1:5000/api/image/${prod.products_id}`
- 
->>>>>>> c99d2fd07f03c53dace48dcb053b344d58bb8e23
         }));
         console.log(data);
         setProducts(productosConId);

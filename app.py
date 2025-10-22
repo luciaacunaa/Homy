@@ -9,10 +9,6 @@ from io import BytesIO
 import mercadopago   
 from functools import wraps
 
-<<<<<<< HEAD
-
-=======
->>>>>>> c99d2fd07f03c53dace48dcb053b344d58bb8e23
 # Agrega credenciales
 sdk = mercadopago.SDK("APP_USR-7798932195313209-100910-463a1fb5da375d86b110528f4d743463-2915372376")
 load_dotenv(".env/paty.env")  # Carga las variables de entorno desde el archivo .env
