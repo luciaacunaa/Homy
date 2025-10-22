@@ -223,6 +223,9 @@ button:hover {
   align-items: center;
 }
 
+/* Badge for cart count */
+/* badge styles removed */
+
 /* Dropdown de categorías */
 .categories-dropdown {
   background: #fff4e0;

@@ -50,4 +50,22 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Favorito: icono animado al tocar */
+.favorite-icon {
+  transition: transform 220ms ease, background-color 220ms ease, color 220ms ease;
+  padding: 6px;
+  border-radius: 50%;
+}
+
+.favorite-icon:active,
+.favorite-icon.animate {
+  transform: scale(1.18);
+  background: #f5edce; /* color solicitado */
+  color: #48601c !important;
+}
+
+.favorite-icon .heart-svg {
+  display: inline-block;
+}
+
   

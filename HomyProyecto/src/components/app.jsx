@@ -15,6 +15,7 @@ import Carousel from "../components/carousel";
 import Footer from "../components/Footer";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import Reviews from "./Reviews";
+import Favorites from "./Favorites";
 function App() {
   const navigate = useNavigate();
 
@@ -197,6 +198,8 @@ function App() {
           }
         />
         <Route path="/payment" element={<PaymentMethods />} />
+        <Route path="/favorites" element={<Favorites />} />
+        <Route path="/favourites" element={<Favorites />} />
         <Route
           path="/products"
           element={

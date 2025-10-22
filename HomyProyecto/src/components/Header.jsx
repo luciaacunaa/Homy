@@ -94,7 +94,7 @@ function PromocionesModal({ open, onClose, images }) {
   );
 }
 
-export default function Header({ onCartClick, onLoginClick, user, onLogout }) {
+export default function Header({ onCartClick, onLoginClick, user, onLogout, cartCount = 0 }) {
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const accountMenuRef = useRef(null);
 
@@ -349,7 +349,7 @@ export default function Header({ onCartClick, onLoginClick, user, onLogout }) {
                     }}
                     onClick={() => {
                       setShowAccountMenu(false);
-                      navigate("/favoritos");
+                      navigate("/favourites");
                     }}
                   >
                     Favoritos
@@ -386,10 +386,11 @@ export default function Header({ onCartClick, onLoginClick, user, onLogout }) {
             </button>
           )}
           <button
-            className="header-btn header-btn-alignment"
+            className="header-btn header-btn-alignment cart-badge"
             onClick={onCartClick}
           >
             <ShoppingCart size={18} />
+            {cartCount > 0 && <span className="badge">{cartCount}</span>}
           </button>
         </div>
       </nav>
