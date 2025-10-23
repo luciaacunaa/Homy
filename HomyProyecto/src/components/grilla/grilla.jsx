@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import "./grilla.css";
 
@@ -39,13 +40,17 @@ const ProductList = ({ addToCart, removeFromCart, cartItems }) => {
   const loadProducts = () => {
     setLoading(true);
     setError(null);
-    fetch("http://127.0.0.1:5000/products")
+    // Si hay query en la URL, usar el endpoint de búsqueda
+    const searchParams = new URLSearchParams(window.location.search);
+    const q = searchParams.get("q");
+    const url = q ? `http://127.0.0.1:5000/api/products/search?query=${encodeURIComponent(q)}` : "http://127.0.0.1:5000/products";
+    fetch(url)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
       .then((data) => {
-        const productosConId = data.map((prod) => ({
+        const productosConId = (data || []).map((prod) => ({
           ...prod,
           id: prod.products_id,
           name: prod.products_name,
@@ -84,7 +89,7 @@ const ProductList = ({ addToCart, removeFromCart, cartItems }) => {
         {loading ? (
           <div style={{ textAlign: 'center' }}>Cargando productos...</div>
         ) : error ? (
-          <div style={{ textAlign: 'center', color: '#b00' }}>
+          <div style={{ textAlign: 'center', color: 'rgba(69, 187, 0, 1)' }}>
             <p>Error cargando productos: {error}</p>
             <button onClick={loadProducts} style={{ background: '#48601c', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 6, cursor: 'pointer' }}>Reintentar</button>
           </div>

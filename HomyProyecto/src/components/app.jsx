@@ -290,16 +290,9 @@ function App() {
             </>
           }
         />
-<<<<<<< HEAD
         <Route path="/payment" element={<PaymentMethods />} />
         <Route path="/favorites" element={<Favorites />} />
         <Route path="/favourites" element={<Favorites />} />
-=======
-        <Route
-          path="/payment"
-          element={<PaymentMethods isAdmin={user?.is_admin} />}
-        />
->>>>>>> e3aa2c0db7623817428c192c59f2fcf671089622
         <Route
           path="/products"
           element={
