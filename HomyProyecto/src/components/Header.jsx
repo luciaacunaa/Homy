@@ -96,6 +96,7 @@ function PromocionesModal({ open, onClose, images }) {
 
 export default function Header({ onCartClick, onLoginClick, user, onLogout, cartCount = 0 }) {
   const [showAccountMenu, setShowAccountMenu] = useState(false);
+  const [favoritesCount, setFavoritesCount] = useState(0);
   const accountMenuRef = useRef(null);
 
   useEffect(() => {
@@ -116,6 +117,36 @@ export default function Header({ onCartClick, onLoginClick, user, onLogout, cart
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showAccountMenu]);
+
+  // compute favorites count per-user from localStorage
+  useEffect(() => {
+    const makeKey = (u) => {
+      if (!u) return null;
+      return `homy_favorites_${u.customers_email || u.email || u.customers_id || u.id}`;
+    };
+    const key = makeKey(user);
+    if (!key) {
+      setFavoritesCount(0);
+      return;
+    }
+    try {
+      const raw = localStorage.getItem(key);
+      const arr = raw ? JSON.parse(raw) : [];
+      setFavoritesCount(Array.isArray(arr) ? arr.length : 0);
+    } catch (err) {
+      setFavoritesCount(0);
+    }
+
+    const handler = (e) => {
+      if (e.key === key) {
+        const val = e.newValue;
+        const arr = val ? JSON.parse(val) : [];
+        setFavoritesCount(Array.isArray(arr) ? arr.length : 0);
+      }
+    };
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
+  }, [user]);
   const [showMap, setShowMap] = useState(false);
   const [categories, setCategories] = useState([]);
   const [showCategories, setShowCategories] = useState(false);

@@ -94,6 +94,11 @@ function App() {
   const handleLogout = () => {
     setUser(null);
     setLoginVisible(false);
+    try {
+      localStorage.removeItem('user');
+    } catch (err) {
+      console.warn('No se pudo eliminar user de localStorage', err);
+    }
     window.location.reload();
   };
 
@@ -108,6 +113,12 @@ function App() {
         onClose={() => setLoginVisible(false)}
         onLoginSuccess={(userData) => {
           setUser(userData);
+          // Persistir usuario en localStorage para mantener sesión entre recargas
+          try {
+            localStorage.setItem('user', JSON.stringify(userData));
+          } catch (err) {
+            console.warn('No se pudo guardar usuario en localStorage', err);
+          }
           setLoginVisible(false);
           if (userData.is_admin) {
             navigate("/admin/orders");
@@ -290,16 +301,10 @@ function App() {
             </>
           }
         />
-<<<<<<< HEAD
-        <Route path="/payment" element={<PaymentMethods />} />
-        <Route path="/favorites" element={<Favorites />} />
-        <Route path="/favourites" element={<Favorites />} />
-=======
         <Route
           path="/payment"
           element={<PaymentMethods isAdmin={user?.is_admin} />}
         />
->>>>>>> e3aa2c0db7623817428c192c59f2fcf671089622
         <Route
           path="/products"
           element={
@@ -320,6 +325,8 @@ function App() {
                 addToCart={addToCart}
                 removeFromCart={removeFromCart}
                 cartItems={cartItems}
+                user={user}
+                onLoginClick={() => setLoginVisible(true)}
               />
             </>
           }
@@ -350,6 +357,9 @@ function App() {
             )
           }
         />
+      </Routes>
+      <Routes>
+        <Route path="/favourites" element={<Favorites user={user} onLoginClick={() => setLoginVisible(true)} />} />
       </Routes>
       <Footer />
     </>

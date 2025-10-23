@@ -2,20 +2,47 @@ import React, { useEffect, useState } from "react";
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import "./grilla.css";
 
-const ProductList = ({ addToCart, removeFromCart, cartItems }) => {
+const ProductList = ({ addToCart, removeFromCart, cartItems, user, onLoginClick }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // Favorites are stored per-user. If there's no user, favorites are empty
+  const makeKey = (u) => {
+    if (!u) return null;
+    return `homy_favorites_${u.customers_email || u.email || u.customers_id || u.id}`;
+  };
+
+  const favKey = makeKey(user);
+
   const [favorites, setFavorites] = useState(() => {
-    const saved = localStorage.getItem('homy_favorites');
+    if (!favKey) return [];
+    const saved = localStorage.getItem(favKey);
     return saved ? JSON.parse(saved) : [];
   });
 
+  // Persist favorites only for logged in users
   useEffect(() => {
-    localStorage.setItem('homy_favorites', JSON.stringify(favorites));
-  }, [favorites]);
+    if (favKey) {
+      localStorage.setItem(favKey, JSON.stringify(favorites));
+    }
+  }, [favorites, favKey]);
+
+  // When user changes (login/logout), reload the favorites for that user
+  useEffect(() => {
+    if (favKey) {
+      const saved = localStorage.getItem(favKey);
+      setFavorites(saved ? JSON.parse(saved) : []);
+    } else {
+      setFavorites([]);
+    }
+  }, [favKey]);
 
   const toggleFavorite = (product) => {
+    // require login to save favorites
+    if (!user) {
+      if (onLoginClick) onLoginClick();
+      return;
+    }
     setFavorites(prev => {
       const exists = prev.find(p => p.id === product.id);
       if (exists) {
