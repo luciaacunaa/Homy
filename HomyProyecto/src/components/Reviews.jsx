@@ -68,7 +68,7 @@ function Reviews({ user }) {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{ color: '#f5a623' }}>{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</div>
-                  {(user && (user.is_admin || user.id === r.userId)) && (
+                  {(user && ((user.email === 'adminhomy@gmail.com') || user.id === r.userId)) && (
                     <button onClick={() => removeReview(r.id)} style={{ background: 'transparent', border: 'none', color: '#d00', cursor: 'pointer' }}>Eliminar</button>
                   )}
                 </div>
