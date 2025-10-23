@@ -70,10 +70,13 @@ def login():
     cursor.close()
 
     if user:
-        # Verificamos si el usuario es admin
-        is_admin = user['is_admin']  # Esto debería ser una columna en tu tabla `customers`
-        
-        # Puedes devolver el rol del usuario junto con los demás datos del usuario
+        # Verificamos si el usuario es admin: solo consideramos admin al email específico
+        is_admin = True if user.get('customers_email') == 'adminhomy@gmail.com' else False
+
+        # Nota: no confiamos en un campo enviado por el frontend; determinamos admin
+        # desde la información guardada (email). Si en la DB existe una columna is_admin
+        # puedes migrar esta lógica, pero por ahora la regla es el email fijo.
+        # Devolveremos el rol del usuario junto con los demás datos del usuario
         return jsonify({
             "message": "Login exitoso",
             "user": {

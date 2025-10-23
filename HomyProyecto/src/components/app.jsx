@@ -49,6 +49,14 @@ function App() {
     }
   }, []);
 
+  // Helper para determinar si el usuario es el administrador
+  const isAdminUser = (u) => {
+    if (!u) return false;
+    // Defendernos de estructuras de usuario distintas
+    const email = u.email || u.customers_email || u?.user?.email;
+    return email === "adminhomy@gmail.com";
+  };
+
   // Guardar carrito en localStorage cada vez que cambia
   useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
@@ -120,7 +128,7 @@ function App() {
             console.warn('No se pudo guardar usuario en localStorage', err);
           }
           setLoginVisible(false);
-          if (userData.is_admin) {
+          if (isAdminUser(userData)) {
             navigate("/admin/orders");
           }
         }}
@@ -197,7 +205,7 @@ function App() {
                     >
                       Sobre nosotros
                     </h2>
-                    {user?.is_admin && (
+                    {isAdminUser(user) && (
                       <button
                         style={{
                           background: "none",
@@ -303,7 +311,7 @@ function App() {
         />
         <Route
           path="/payment"
-          element={<PaymentMethods isAdmin={user?.is_admin} />}
+          element={<PaymentMethods isAdmin={isAdminUser(user)} />}
         />
         <Route
           path="/products"
@@ -335,7 +343,7 @@ function App() {
           path="/promotions"
           element={
             <Promociones
-              isAdmin={user?.is_admin}
+              isAdmin={isAdminUser(user)}
               images={[
                 "/promos/Cream and Brown Minimalist Chair Furniture Sale Flyer.png",
                 "/promos/Descuento de noviembre en Mercado Pago.png",
@@ -348,7 +356,7 @@ function App() {
         <Route
           path="/admin/orders"
           element={
-            user && user.is_admin ? (
+            user && isAdminUser(user) ? (
               <AdminOrders />
             ) : (
               <div style={{ padding: "2rem", color: "red" }}>
