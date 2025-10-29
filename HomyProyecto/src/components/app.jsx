@@ -16,17 +16,18 @@ import Footer from "../components/Footer";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import Reviews from "./Reviews";
 import Favorites from "./Favorites";
+
 function App() {
   const navigate = useNavigate();
 
   const [cartVisible, setCartVisible] = useState(false);
   const [loginVisible, setLoginVisible] = useState(false);
-  const [user, setUser] = useState(null); // Usuario autenticado
+  const [user, setUser] = useState(null);
   const [cartItems, setCartItems] = useState(() => {
     const saved = localStorage.getItem("cartItems");
     return saved && saved !== "[]" ? JSON.parse(saved) : [];
   });
-  // Estado para edición de 'Sobre nosotros'
+
   const [editAbout, setEditAbout] = useState(false);
   const [aboutText, setAboutText] = useState(
     "En Homy, nos apasiona ayudarte a crear espacios únicos y acogedores. Ofrecemos una cuidada selección de muebles y decoración para transformar tu hogar en el lugar de tus sueños. Nuestro equipo está comprometido con la calidad, el diseño y la atención personalizada. ¡Gracias por confiar en nosotros para acompañarte en cada rincón de tu casa!"
@@ -38,10 +39,8 @@ function App() {
   const handleSaveAbout = () => {
     setEditAbout(false);
     setAboutTextBackup(aboutText);
-    // Aquí podrías agregar lógica para guardar el texto en backend si lo deseas
   };
 
-  //Recuperar sesión del usuario al montar la app
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
     if (savedUser) {
@@ -49,20 +48,16 @@ function App() {
     }
   }, []);
 
-  // Helper para determinar si el usuario es el administrador
   const isAdminUser = (u) => {
     if (!u) return false;
-    // Defendernos de estructuras de usuario distintas
     const email = u.email || u.customers_email || u?.user?.email;
     return email === "adminhomy@gmail.com";
   };
 
-  // Guardar carrito en localStorage cada vez que cambia
   useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  // Agregar producto al carrito solo si el usuario está logueado
   const addToCart = (product) => {
     if (!user) {
       setLoginVisible(true);
@@ -82,7 +77,6 @@ function App() {
     });
   };
 
-  // Eliminar producto del carrito
   const removeFromCart = (product) => {
     setCartItems((prev) => {
       const found = prev.find((item) => item.id === product.id);
@@ -98,7 +92,6 @@ function App() {
     });
   };
 
-  // Cerrar sesión
   const handleLogout = () => {
     setUser(null);
     setLoginVisible(false);
@@ -110,9 +103,6 @@ function App() {
     window.location.reload();
   };
 
-  // Vaciar carrito
-  // Esta función limpia el estado de `cartItems`. El efecto `useEffect`
-  // guarda automáticamente el arreglo vacío en localStorage.
   const clearCart = () => setCartItems([]);
 
   if (loginVisible) {
@@ -121,7 +111,6 @@ function App() {
         onClose={() => setLoginVisible(false)}
         onLoginSuccess={(userData) => {
           setUser(userData);
-          // Persistir usuario en localStorage para mantener sesión entre recargas
           try {
             localStorage.setItem("user", JSON.stringify(userData));
           } catch (err) {
@@ -139,12 +128,27 @@ function App() {
   return (
     <>
       <Header
-        onCartClick={() => setCartVisible(true)}
+        onCartClick={() => setCartVisible(true)} // ✅ Botón del carrito ahora abre el cart en cualquier ruta
         onLoginClick={() => setLoginVisible(true)}
         user={user}
         onLogout={handleLogout}
         onPaymentClick={() => navigate("/payment")}
       />
+
+      {/* ✅ Carrito siempre presente, visible desde cualquier página */}
+      <Cart
+        onClose={() => setCartVisible(false)}
+        visible={cartVisible}
+        items={cartItems}
+        goToCheckout={() => {
+          setCartVisible(false);
+          navigate("/checkout");
+        }}
+        onClear={clearCart}
+        addToCart={addToCart}
+        removeFromCart={removeFromCart}
+      />
+
       <Routes>
         <Route
           path="/"
@@ -313,30 +317,43 @@ function App() {
           path="/payment"
           element={<PaymentMethods isAdmin={isAdminUser(user)} />}
         />
+        path="/category/:categoryId" element=
+        {
+          <>
+            <Cart
+              onClose={() => setCartVisible(false)}
+              visible={cartVisible}
+              items={cartItems}
+              goToCheckout={() => {
+                setCartVisible(false);
+                navigate("/checkout");
+              }}
+              onClear={clearCart}
+              addToCart={addToCart}
+              removeFromCart={removeFromCart}
+            />
+            <ProductList
+              addToCart={addToCart}
+              removeFromCart={removeFromCart}
+              cartItems={cartItems}
+              user={user}
+              onLoginClick={() => setLoginVisible(true)}
+            />
+          </>
+        }
+        <Route path="/payment" element={<PaymentMethods />} />
+        <Route path="/favorites" element={<Favorites />} />
+        <Route path="/favourites" element={<Favorites />} />
         <Route
           path="/products"
           element={
-            <>
-              <Cart
-                onClose={() => setCartVisible(false)}
-                visible={cartVisible}
-                items={cartItems}
-                goToCheckout={() => {
-                  setCartVisible(false);
-                  navigate("/checkout");
-                }}
-                onClear={clearCart}
-                addToCart={addToCart}
-                removeFromCart={removeFromCart}
-              />
-              <ProductList
-                addToCart={addToCart}
-                removeFromCart={removeFromCart}
-                cartItems={cartItems}
-                user={user}
-                onLoginClick={() => setLoginVisible(true)}
-              />
-            </>
+            <ProductList
+              addToCart={addToCart}
+              removeFromCart={removeFromCart}
+              cartItems={cartItems}
+              user={user}
+              onLoginClick={() => setLoginVisible(true)}
+            />
           }
         />
         <Route
@@ -354,6 +371,10 @@ function App() {
         />
         <Route path="/checkout" element={<Checkout cartItems={cartItems} />} />
         <Route
+          path="/payment"
+          element={<PaymentMethods isAdmin={isAdminUser(user)} />}
+        />
+        <Route
           path="/admin/orders"
           element={
             user && isAdminUser(user) ? (
@@ -363,6 +384,12 @@ function App() {
                 Acceso denegado. Solo el administrador puede ver los pedidos.
               </div>
             )
+          }
+        />
+        <Route
+          path="/favourites"
+          element={
+            <Favorites user={user} onLoginClick={() => setLoginVisible(true)} />
           }
         />
       </Routes>

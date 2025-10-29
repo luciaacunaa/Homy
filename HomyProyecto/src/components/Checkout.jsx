@@ -1,129 +1,235 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./checkout.css";
-import { initMercadoPago, Wallet } from "@mercadopago/sdk-react";
 
-const Checkout = ({ cartItems }) => {
+const TEST_CARDS = [
+  { brand: "Visa (test)", number: "4111111111111111" },
+  { brand: "Mastercard (test)", number: "5555555555554444" },
+  { brand: "Amex (test)", number: "378282246310005" },
+];
+
+const Checkout = ({ cartItems, setCartItems }) => {
   const [total, setTotal] = useState(0);
-  const [preferenceId, setPreferenceId] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [paid, setPaid] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [buyer, setBuyer] = useState({ name: "", email: "" });
+  const [cardData, setCardData] = useState({
+    number: "",
+    brand: "",
+    expiry: "",
+    cvv: "",
+  });
   const [error, setError] = useState("");
 
-  // Inicializar Mercado Pago
   useEffect(() => {
-    initMercadoPago("APP_USR-7b4915cf-80ba-4578-9dda-909db7026e16");
-  }, []);
-
-  // Calcular total pidiendo a backend
-  useEffect(() => {
-    if (cartItems.length === 0) {
-      setTotal(0);
-      return;
-    }
-    setLoading(true);
-    setError(null);
-
-    const productos = cartItems.map(item => ({
-      products_id: item.id || item.products_id,
-      cantidad: item.quantity,
-    }));
-
-    fetch("http://127.0.0.1:5000/api/receipt/usuario", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ productos }),
-    })
-      .then(res => res.json())
-      .then(data => {
-        setTotal(data.total_compra);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError("Error al obtener el total");
-        setLoading(false);
-      });
+    const totalCompra = cartItems.reduce(
+      (acc, item) => acc + Number(item.price) * Number(item.quantity),
+      0
+    );
+    setTotal(totalCompra);
   }, [cartItems]);
 
-  // Crear preferencia cuando ya tengo total, fetch al backend. El backend hace fetch a MP, 
-  //modifique el endpoint /crear_preferencia en app.py para que reciba items
+  const handlePayment = (e) => {
+    e.preventDefault();
+    setError("");
 
-  useEffect(() => {
-    if (cartItems.length === 0 || total <= 0) return;
+    // Validaciones básicas
+    if (!buyer.name || !buyer.email || !paymentMethod) {
+      setError("Completá nombre, email y método de pago.");
+      return;
+    }
 
-    const crearPreferencia = async () => {
-      setLoading(true);
-      setError("");
-
-      console.log("💰 Total enviado al backend:", total, cartItems);
-
-      try {
-        const response = await fetch("http://127.0.0.1:5000/crear_preferencia", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            title: "Compra en mi tienda",
-            quantity: 1,
-            price: total,
-          }),
-        });
-
-        const data = await response.json();
-
-        if (data.id) {
-          setPreferenceId(data.id);
-        } else {
-          setError("No se pudo crear la preferencia.");
-          console.error("Error:", data);
-        }
-      } catch (err) {
-        console.error("Error al conectar con el servidor:", err);
-        setError("Error al conectar con el servidor.");
-      } finally {
-        setLoading(false);
+    if (paymentMethod === "tarjeta") {
+      const { number, expiry, cvv } = cardData;
+      if (!number || !expiry || !cvv) {
+        setError("Completá los datos de la tarjeta.");
+        return;
       }
-    };
+      // validación simple del número (dígitos)
+      const raw = number.replace(/\s+/g, "");
+      if (!/^\d{13,19}$/.test(raw)) {
+        setError("Número de tarjeta inválido (13-19 dígitos).");
+        return;
+      }
+      // expiry simple MM/AA o MM/YYYY (comprobar fecha futura)
+      const parts = expiry.split("/").map(p => p.trim());
+      if (parts.length !== 2) {
+        setError("Fecha de expiración inválida. Usá MM/AA o MM/YYYY.");
+        return;
+      }
+      const month = parseInt(parts[0], 10);
+      let year = parseInt(parts[1], 10);
+      if (parts[1].length === 2) year += 2000;
+      const now = new Date();
+      const expDate = new Date(year, month - 1, 1);
+      if (isNaN(expDate.getTime()) || month < 1 || month > 12 || expDate < new Date(now.getFullYear(), now.getMonth(), 1)) {
+        setError("La tarjeta está vencida o la fecha es inválida.");
+        return;
+      }
+      if (!/^\d{3,4}$/.test(cvv)) {
+        setError("CVV inválido (3 o 4 dígitos).");
+        return;
+      }
+    }
 
-    crearPreferencia();
-  }, [cartItems, total]);
+    // Simular procesamiento
+    setTimeout(() => {
+      // Guardar orden (opcional) en localStorage
+      const newOrder = {
+        id: Date.now(),
+        buyer,
+        paymentMethod,
+        total,
+        date: new Date().toLocaleString(),
+        items: cartItems,
+      };
+      const prevOrders = JSON.parse(localStorage.getItem("orders")) || [];
+      localStorage.setItem("orders", JSON.stringify([...prevOrders, newOrder]));
+
+      // VACIAR carrito en estado y en localStorage
+      if (typeof setCartItems === "function") {
+        setCartItems([]);
+      }
+      try {
+        localStorage.removeItem("cartItems");
+      } catch (err) {
+        console.warn("No se pudo limpiar localStorage cartItems:", err);
+      }
+
+      // Marcar pago completado y mostrar pantalla de éxito
+      setPaid(true);
+    }, 800);
+  };
+
+  if (paid) {
+    const masked =
+      paymentMethod === "tarjeta"
+        ? `**** **** **** ${cardData.number.slice(-4)}`
+        : paymentMethod === "efectivo"
+        ? "Efectivo al recibir"
+        : "Transferencia bancaria";
+
+    return (
+      <div className="checkout-container" style={{ textAlign: "center" }}>
+        <h2 className="checkout-title" style={{ color: "green" }}>
+           Pago completado
+        </h2>
+        <p>Gracias, <b>{buyer.name}</b>.</p>
+        <p>Enviamos confirmación a: <b>{buyer.email}</b></p>
+        <p>Método: <b>{paymentMethod}</b> — {masked}</p>
+        <p>Total abonado: <b>${total}</b></p>
+
+        <button
+          onClick={() => (window.location.href = "/products")}
+          className="confirm-btn"
+        >
+          Volver a la tienda
+        </button>
+      </div>
+    );
+  }
+
+  if (!cartItems || cartItems.length === 0) {
+    return (
+      <div className="checkout-container">
+        <button className="back-btn" onClick={() => window.history.back()}>
+          ← Atrás
+        </button>
+        <h2 className="checkout-title">No hay productos en el carrito</h2>
+      </div>
+    );
+  }
 
   return (
-    <div className="checkout-container" style={{ position: "relative" }}>
+    <div className="checkout-container">
       <button className="back-btn" onClick={() => window.history.back()}>
-        &#8592; Atrás
+        ← Atrás
       </button>
 
       <h2 className="checkout-title">Resumen de la compra</h2>
 
-      {cartItems.length === 0 ? (
-        <p>No hay productos en el carrito.</p>
-      ) : (
-        <>
-          <ul className="checkout-list">
-            {cartItems.map((item, idx) => (
-              <li key={idx}>
-                <span>
-                  {item.name} x {item.quantity}
+      <ul className="checkout-list">
+        {cartItems.map((item, idx) => (
+          <li key={idx}>
+            <span>{item.name} x {item.quantity}</span>
+            <span>${Number(item.price) * Number(item.quantity)}</span>
+          </li>
+        ))}
+      </ul>
+
+      <div className="checkout-total">Total: ${total}</div>
+
+      <form onSubmit={handlePayment} className="checkout-form">
+        <h3>Datos del comprador</h3>
+        <input
+          type="text"
+          placeholder="Nombre completo"
+          value={buyer.name}
+          onChange={(e) => setBuyer({ ...buyer, name: e.target.value })}
+        />
+        <input
+          type="email"
+          placeholder="Correo electrónico"
+          value={buyer.email}
+          onChange={(e) => setBuyer({ ...buyer, email: e.target.value })}
+        />
+
+        <h3>Método de pago</h3>
+        <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
+          <option value="">Seleccioná uno...</option>
+          <option value="transferencia">Transferencia bancaria</option>
+          <option value="tarjeta">Tarjeta (simulada)</option>
+        </select>
+
+        {paymentMethod === "tarjeta" && (
+          <div style={{ marginTop: "1rem" }}>
+            <p style={{ fontSize: "0.9rem", marginBottom: "0.6rem" }}>
+              Para pruebas podés usar:
+              {TEST_CARDS.map((c, i) => (
+                <span key={i} style={{ display: "block", fontSize: "0.85rem" }}>
+                  • {c.brand}: <code>{c.number}</code>
                 </span>
-                <span>${Number(item.price) * Number(item.quantity)}</span>
-              </li>
-            ))}
-          </ul>
+              ))}
+            </p>
 
-          <div className="checkout-total">Total: ${total}</div>
-
-          {loading && <p>Cargando botón de pago...</p>}
-          {error && <p style={{ color: "red" }}>{error}</p>}
-
-          {!loading && !error && preferenceId && (
-            <div
-              className="wallet-container"
-              style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
-            >
-              <Wallet initialization={{ preferenceId }} />
+            <input
+              type="text"
+              placeholder="Número de tarjeta"
+              value={cardData.number}
+              onChange={(e) => setCardData({ ...cardData, number: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder="Marca (Visa / Mastercard / Amex)"
+              value={cardData.brand}
+              onChange={(e) => setCardData({ ...cardData, brand: e.target.value })}
+            />
+            <div style={{ display: "flex", gap: "1rem" }}>
+              <input
+                type="text"
+                placeholder="MM/AA"
+                value={cardData.expiry}
+                onChange={(e) => setCardData({ ...cardData, expiry: e.target.value })}
+                style={{ width: "50%" }}
+              />
+              <input
+                type="text"
+                placeholder="CVV"
+                value={cardData.cvv}
+                onChange={(e) => setCardData({ ...cardData, cvv: e.target.value })}
+                style={{ width: "50%" }}
+              />
             </div>
-          )}
-        </>
-      )}
+          </div>
+        )}
+
+        {error && <p style={{ color: "red" }}>{error}</p>}
+
+        <button type="submit" className="confirm-btn" style={{ marginTop: "1rem" }}>
+          Confirmar pago simulado
+        </button>
+      </form>
     </div>
   );
-}
+};
+
 export default Checkout;
