@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import "./grilla.css";
 
@@ -8,6 +8,9 @@ const ProductList = ({ addToCart, removeFromCart, cartItems, user, onLoginClick 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   // Favorites are stored per-user. If there's no user, favorites are empty
+  const params = useParams();
+  const location = useLocation();
+
   const makeKey = (u) => {
     if (!u) return null;
     return `homy_favorites_${u.customers_email || u.email || u.customers_id || u.id}`;
@@ -68,20 +71,42 @@ const ProductList = ({ addToCart, removeFromCart, cartItems, user, onLoginClick 
     setLoading(true);
     setError(null);
     // Si hay query en la URL, usar el endpoint de búsqueda
-    const searchParams = new URLSearchParams(window.location.search);
+    const searchParams = new URLSearchParams(location.search);
     const q = searchParams.get("q");
-    const url = q ? `http://127.0.0.1:5000/api/products/search?query=${encodeURIComponent(q)}` : "http://127.0.0.1:5000/products";
+    const categoryId = params?.categoryId;
+
+    let url;
+    if (q) {
+      url = `http://127.0.0.1:5000/api/products/search?query=${encodeURIComponent(q)}`;
+    } else if (categoryId) {
+      url = `http://127.0.0.1:5000/api/products?category=${encodeURIComponent(categoryId)}`; // ajusta según tu backend
+    } else {
+      url = "http://127.0.0.1:5000/products";
+    }
     fetch(url)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
       .then((data) => {
-        const productosConId = (data || []).map((prod) => ({
+        let items = data || [];
+        // si categoryId existe pero el endpoint devolvió items no filtrados, filtramos en cliente
+        if (categoryId && Array.isArray(items) && items.length > 0) {
+          const looksFiltered = items.every((it) => {
+            return (it.category_id && it.category_id === categoryId) || (it.category && it.category === categoryId) || (it.categories && Array.isArray(it.categories) && it.categories.includes(categoryId));
+          });
+          if (!looksFiltered) {
+            items = items.filter((it) => {
+              return (it.category_id && it.category_id === categoryId) || (it.category && it.category === categoryId) || (it.categories && Array.isArray(it.categories) && it.categories.includes(categoryId));
+            });
+          }
+        }
+
+        const productosConId = (items || []).map((prod) => ({
           ...prod,
-          id: prod.products_id,
-          name: prod.products_name,
-          image_url: `http://127.0.0.1:5000/image/${prod.products_id}`
+          id: prod.products_id || prod.id,
+          name: prod.products_name || prod.name,
+          image_url: prod.products_id ? `http://127.0.0.1:5000/image/${prod.products_id}` : prod.image_url || "",
         }));
         setProducts(productosConId);
       })
@@ -95,7 +120,7 @@ const ProductList = ({ addToCart, removeFromCart, cartItems, user, onLoginClick 
 
   useEffect(() => {
     loadProducts();
-  }, []);
+  }, [location.search, params?.categoryId]);
 
   // función para ocultar un producto
   const handleHideProduct = (id) => {

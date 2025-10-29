@@ -1,4 +1,3 @@
-from flask import Flask, g, jsonify
 import mysql.connector, os
 from flask import Flask, g, request, jsonify
 from flask_cors import CORS 
@@ -201,18 +200,18 @@ def categoria_con_productos():
 @app.route('/api/images/<int:product_id>', methods=['GET']) ##ABRIL
 def get_image(product_id):
     try:
-        db = abrirConexion()
-        cursor = db.cursor()
-        cursor.execute("SELECT image_data, mime_type FROM images WHERE products_id = %s", (product_id,))
+        db = abrirConexion()  # Usa la función abrirConexion que ya tienes definida
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("SELECT image_url FROM images WHERE products_id = %s LIMIT 1", (str(product_id),))
         result = cursor.fetchone()
-        cursor.close()
-        db.close()
+        cerrarConexion()
+        #cursor.close()
 
-        if result and result[0]:
-            image_data, mime_type = result
-            return send_file(BytesIO(image_data), mimetype=mime_type)
-        else:
-            return jsonify({"error": "Imagen no encontrada"}), 404
+        if result is None:
+            return jsonify({"message": "Image not found"}), 404
+        return jsonify({"image_url": result["image_url"]}), 200
+            # return send_file(BytesIO(image_data), mimetype=mime_type)
+    
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
@@ -439,7 +438,11 @@ def crear_preferencia():
     except Exception as e:
         print("Error al crear la preferencia:", e)
         return jsonify({"error": str(e)}), 500
-    
+
+def create_app():
+    return app
+
+
 #Todo tien que ir arriba de este if
 if __name__ == "__main__":
     app.run(debug=True)  # Totalmente necesario correr la pag con flask run --debug
