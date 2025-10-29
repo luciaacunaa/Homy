@@ -7,6 +7,7 @@
     gap: 10px;
     justify-content: center;
     width: 100%;
+    flex-direction: column;
   }
   .nav-container {
     flex-direction: column;
@@ -18,7 +19,9 @@
     margin-top: 10px;
     margin-bottom: 10px;
   }
-  .header-btn, .header-btn-alignment, button {
+  .header-btn,
+  .header-btn-alignment,
+  button {
     min-width: 120px;
     margin-bottom: 6px;
   }
@@ -48,7 +51,9 @@
     width: 100%;
     margin: 8px 0;
   }
-  .header-btn, .header-btn-alignment, button {
+  .header-btn,
+  .header-btn-alignment,
+  button {
     width: 100%;
     min-width: unset;
     justify-content: center;
@@ -67,6 +72,7 @@
     flex-wrap: wrap;
     gap: 10px;
     justify-content: center;
+    flex-direction: row;
   }
   .search-bar {
     width: 100%;
@@ -85,12 +91,15 @@
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
+    flex-direction: column;
   }
   .search-bar {
     width: 100%;
     margin: 8px 0;
   }
-  .header-btn, .header-btn-alignment, button {
+  .header-btn,
+  .header-btn-alignment,
+  button {
     width: 100%;
     justify-content: center;
     margin-bottom: 6px;
@@ -125,7 +134,9 @@
   transition: background 0.2s, color 0.2s;
 }
 
-body{background-color: #fffbeb;}
+body {
+  background-color: #fffbeb;
+}
 
 .header {
   padding: 2rem 2rem; /*Es un espacio del evento hasta el borde*/
@@ -133,31 +144,29 @@ body{background-color: #fffbeb;}
   box-shadow: 0 2px 5px #44522b;
 }
 
-
 .nav-right {
   margin-left: auto; /* manda todo a la derecha */
   display: flex;
   gap: 15px;
 }
 
-.nav-container{ /*Contenedor del header*/
+.nav-container {
+  /*Contenedor del header*/
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-
-.container
-{ /*Contenedor del buscador y botones*/
+.container {
+  /*Contenedor del buscador y botones*/
   flex-direction: row;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  
 }
 
-.search-bar
-{ /*Recuadro del buscador*/
+.search-bar {
+  /*Recuadro del buscador*/
   position: relative;
   display: flex;
   justify-content: center;
@@ -165,8 +174,8 @@ body{background-color: #fffbeb;}
   align-items: center;
 }
 
-.search-bar input
-{ /*Buscador*/
+.search-bar input {
+  /*Buscador*/
   width: 100%; /*Ancho del buscador*/
   padding: 20px; /*Espacio entre el borde y el texto*/
   border: none;
@@ -176,24 +185,15 @@ body{background-color: #fffbeb;}
   box-shadow: 0 2px 5px #ddd5b2c9;
 }
 
-.search-bar input:focus 
-{ /*Cuando haces click en el buscador*/
+.search-bar input:focus {
+  /*Cuando haces click en el buscador*/
   outline: none; /*Quita el borde azul al hacer click*/
   box-shadow: 0 2px 5px #ddd5b2c9;
 }
 
 /* Botones generales del header */
-.header-btn { /*Botones ubi, ingresar y carrito*/
- background-color: #f5edce;
-  border: none;
-  border-radius: 40px 40px 40px 40px;
-  padding: 8px 16px;
-  font-size: 15px;
-  cursor: pointer;
-  box-shadow: 0 2px 5px #ddd5b2c9;
-}
-
-button { /*Botones categoria, promos y pago*/
+.header-btn {
+  /*Botones ubi, ingresar y carrito*/
   background-color: #f5edce;
   border: none;
   border-radius: 40px 40px 40px 40px;
@@ -203,15 +203,27 @@ button { /*Botones categoria, promos y pago*/
   box-shadow: 0 2px 5px #ddd5b2c9;
 }
 
-.search-bar button{ /*Botón lupita*/
-position: absolute;
-right: 5px;
-background-color: #48601c;
-font-size: 15px;
-border: none;
-padding: 10px 15px;
-border-radius: 40px 40px 40px 40px;
-box-shadow: 0 2px 5px #ddd5b2c9;
+button {
+  /*Botones categoria, promos y pago*/
+  background-color: #f5edce;
+  border: none;
+  border-radius: 40px 40px 40px 40px;
+  padding: 8px 16px;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px #ddd5b2c9;
+}
+
+.search-bar button {
+  /*Botón lupita*/
+  position: absolute;
+  right: 5px;
+  background-color: #48601c;
+  font-size: 15px;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 40px 40px 40px 40px;
+  box-shadow: 0 2px 5px #ddd5b2c9;
 }
 
 button:hover {
@@ -229,14 +241,14 @@ button:hover {
 /* Dropdown de categorías */
 .categories-dropdown {
   background: #fff4e0;
-  border: 1px solid rgba(0,0,0,0.06);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 8px;
   min-width: 220px;
   padding: 6px;
 }
 
 .categories-dropdown .category-item:hover {
-  background: rgba(72,96,28,0.08);
+  background: rgba(72, 96, 28, 0.08);
   color: #48601c;
 }
 
@@ -244,4 +256,3 @@ button:hover {
   font-size: 14px;
   color: #333;
 }
-

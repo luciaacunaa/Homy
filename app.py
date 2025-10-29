@@ -225,12 +225,7 @@ def get_products():
 
         # Traer productos y, si existe, la URL de la imagen
         query = """
-            SELECT 
-                p.products_id, 
-                p.products_name, 
-                p.price,
-                (SELECT image_url FROM images WHERE products_id = p.products_id LIMIT 1) AS image_url
-            FROM products p
+           SELECT * FROM products LEFT JOIN images ON products.products_id=images.products_id; 
         """
         cursor.execute(query)
         products = cursor.fetchall()  # Esto debe ser una lista de diccionarios
