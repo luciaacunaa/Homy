@@ -392,9 +392,38 @@ def admin_get_orders():
     cursor = db.cursor(dictionary=True)
     cursor.execute("SELECT * FROM receipt;")
     orders = cursor.fetchall()
-    receipt = orders
     cursor.close()
-    return jsonify(receipt)
+    db.close()
+    return jsonify(orders)
+
+
+#endpoint en prueba -mary 
+@app.route('/api/receipt', methods=['POST'])
+def save_order():
+    data = request.get_json()
+
+    db = abrirConexion()
+    cursor = db.cursor()
+
+    query = """
+    INSERT INTO receipt (customers_name, customers_email, payment, total, date, items)
+    VALUES (%s, %s, %s, %s, %s, %s)
+    """
+    values = (
+        data.get('buyer_name'),
+        data.get('buyer_email'),
+        data.get('payment_method'),
+        data.get('total'),
+        data.get('date'),
+        data.get('items')
+    )
+
+    cursor.execute(query, values)
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({"message": "Pedido guardado correctamente"}), 201
 
 
 
