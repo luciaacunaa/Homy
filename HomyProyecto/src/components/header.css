@@ -125,7 +125,12 @@
   transition: background 0.2s, color 0.2s;
 }
 
-body{background-color: #fffbeb;}
+body{background-color: #fffbeb; font-family: Arial, sans-serif;}
+
+/* Forzar la misma tipografía en elementos interactivos y formularios */
+body, input, button, select, textarea {
+  font-family: Arial, sans-serif;
+}
 
 .header {
   padding: 2rem 2rem; /*Es un espacio del evento hasta el borde*/
@@ -212,6 +217,16 @@ border: none;
 padding: 10px 15px;
 border-radius: 40px 40px 40px 40px;
 box-shadow: 0 2px 5px #ddd5b2c9;
+}
+
+/* Asegurar que la lupita y las categorías usen la misma tipografía y estilo que los botones */
+.search-bar button,
+.categories-dropdown,
+.categories-dropdown .category-item {
+  font-family: Arial, sans-serif; /* misma que en .product-container */
+  font-size: 15px; /* mismo tamaño que button */
+  font-weight: 400;
+  color: inherit;
 }
 
 button:hover {
