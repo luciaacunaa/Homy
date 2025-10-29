@@ -134,16 +134,18 @@
   transition: background 0.2s, color 0.2s;
 }
 
-<<<<<<< HEAD
 body {
   background-color: #fffbeb;
-=======
-body{background-color: #fffbeb; font-family: Arial, sans-serif;}
+  font-family: Arial, sans-serif;
+}
 
 /* Forzar la misma tipografía en elementos interactivos y formularios */
-body, input, button, select, textarea {
+body,
+input,
+button,
+select,
+textarea {
   font-family: Arial, sans-serif;
->>>>>>> 0f67241d7d60824c8937a3b0e81cdc07d6de47aa
 }
 
 .header {

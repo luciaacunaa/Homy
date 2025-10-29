@@ -310,40 +310,9 @@ function App() {
           }
         />
         <Route
-<<<<<<< HEAD
           path="/payment"
           element={<PaymentMethods isAdmin={isAdminUser(user)} />}
         />
-=======
-          path="/category/:categoryId"
-          element={
-            <>
-              <Cart
-                onClose={() => setCartVisible(false)}
-                visible={cartVisible}
-                items={cartItems}
-                goToCheckout={() => {
-                  setCartVisible(false);
-                  navigate("/checkout");
-                }}
-                onClear={clearCart}
-                addToCart={addToCart}
-                removeFromCart={removeFromCart}
-              />
-              <ProductList
-                addToCart={addToCart}
-                removeFromCart={removeFromCart}
-                cartItems={cartItems}
-                user={user}
-                onLoginClick={() => setLoginVisible(true)}
-              />
-            </>
-          }
-        />
-        <Route path="/payment" element={<PaymentMethods />} />
-        <Route path="/favorites" element={<Favorites />} />
-        <Route path="/favourites" element={<Favorites />} />
->>>>>>> 0f67241d7d60824c8937a3b0e81cdc07d6de47aa
         <Route
           path="/products"
           element={
