@@ -32,9 +32,7 @@ function App() {
   const [aboutText, setAboutText] = useState(
     "En Homy, nos apasiona ayudarte a crear espacios únicos y acogedores. Ofrecemos una cuidada selección de muebles y decoración para transformar tu hogar en el lugar de tus sueños. Nuestro equipo está comprometido con la calidad, el diseño y la atención personalizada. ¡Gracias por confiar en nosotros para acompañarte en cada rincón de tu casa!"
   );
-  const [aboutTextBackup, setAboutTextBackup] = useState(
-    "En Homy, nos apasiona ayudarte a crear espacios únicos y acogedores. Ofrecemos una cuidada selección de muebles y decoración para transformar tu hogar en el lugar de tus sueños. Nuestro equipo está comprometido con la calidad, el diseño y la atención personalizada. ¡Gracias por confiar en nosotros para acompañarte en cada rincón de tu casa!"
-  );
+  const [aboutTextBackup, setAboutTextBackup] = useState(aboutText);
 
   const handleSaveAbout = () => {
     setEditAbout(false);
@@ -43,9 +41,7 @@ function App() {
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
+    if (savedUser) setUser(JSON.parse(savedUser));
   }, []);
 
   const isAdminUser = (u) => {
@@ -65,15 +61,13 @@ function App() {
     }
     setCartItems((prev) => {
       const found = prev.find((item) => item.id === product.id);
-      if (found) {
-        return prev.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      } else {
-        return [...prev, { ...product, quantity: 1 }];
-      }
+      return found
+        ? prev.map((item) =>
+            item.id === product.id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          )
+        : [...prev, { ...product, quantity: 1 }];
     });
   };
 
@@ -95,11 +89,7 @@ function App() {
   const handleLogout = () => {
     setUser(null);
     setLoginVisible(false);
-    try {
-      localStorage.removeItem("user");
-    } catch (err) {
-      console.warn("No se pudo eliminar user de localStorage", err);
-    }
+    localStorage.removeItem("user");
     window.location.reload();
   };
 
@@ -111,15 +101,9 @@ function App() {
         onClose={() => setLoginVisible(false)}
         onLoginSuccess={(userData) => {
           setUser(userData);
-          try {
-            localStorage.setItem("user", JSON.stringify(userData));
-          } catch (err) {
-            console.warn("No se pudo guardar usuario en localStorage", err);
-          }
+          localStorage.setItem("user", JSON.stringify(userData));
           setLoginVisible(false);
-          if (isAdminUser(userData)) {
-            navigate("/admin/orders");
-          }
+          if (isAdminUser(userData)) navigate("/admin/orders");
         }}
       />
     );
@@ -128,14 +112,13 @@ function App() {
   return (
     <>
       <Header
-        onCartClick={() => setCartVisible(true)} // ✅ Botón del carrito ahora abre el cart en cualquier ruta
+        onCartClick={() => setCartVisible(true)}
         onLoginClick={() => setLoginVisible(true)}
         user={user}
         onLogout={handleLogout}
         onPaymentClick={() => navigate("/payment")}
       />
 
-      {/* ✅ Carrito siempre presente, visible desde cualquier página */}
       <Cart
         onClose={() => setCartVisible(false)}
         visible={cartVisible}
@@ -150,6 +133,7 @@ function App() {
       />
 
       <Routes>
+        {/* 🏠 Inicio */}
         <Route
           path="/"
           element={
@@ -200,13 +184,7 @@ function App() {
                       gap: "0.5rem",
                     }}
                   >
-                    <h2
-                      style={{
-                        marginTop: 0,
-                        color: "#48601c",
-                        marginBottom: 0,
-                      }}
-                    >
+                    <h2 style={{ marginTop: 0, color: "#48601c" }}>
                       Sobre nosotros
                     </h2>
                     {isAdminUser(user) && (
@@ -217,7 +195,6 @@ function App() {
                           cursor: "pointer",
                           color: "#48601c",
                           fontSize: "1.3rem",
-                          padding: 0,
                         }}
                         onClick={() => setEditAbout(true)}
                         title="Editar texto"
@@ -268,8 +245,6 @@ function App() {
                           }}
                           style={{
                             background: "#ccc",
-                            color: "#222",
-                            border: "none",
                             borderRadius: "0.5rem",
                             padding: "0.5rem 1rem",
                             cursor: "pointer",
@@ -295,43 +270,23 @@ function App() {
                       alignItems: "center",
                     }}
                   >
-                    <FaInstagram style={{ cursor: "pointer" }} />
-                    <FaWhatsapp style={{ cursor: "pointer" }} />
-                    <MdOutlineMail style={{ cursor: "pointer" }} />
+                    <FaInstagram />
+                    <FaWhatsapp />
+                    <MdOutlineMail />
                   </div>
                 </div>
               </div>
-              <div
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "center",
-                }}
-              >
+              <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
                 <Reviews user={user} />
               </div>
             </>
           }
         />
+
+        {/* 📦 Categorías */}
         <Route
-          path="/payment"
-          element={<PaymentMethods isAdmin={isAdminUser(user)} />}
-        />
-        path="/category/:categoryId" element=
-        {
-          <>
-            <Cart
-              onClose={() => setCartVisible(false)}
-              visible={cartVisible}
-              items={cartItems}
-              goToCheckout={() => {
-                setCartVisible(false);
-                navigate("/checkout");
-              }}
-              onClear={clearCart}
-              addToCart={addToCart}
-              removeFromCart={removeFromCart}
-            />
+          path="/category/:categoryId"
+          element={
             <ProductList
               addToCart={addToCart}
               removeFromCart={removeFromCart}
@@ -339,11 +294,22 @@ function App() {
               user={user}
               onLoginClick={() => setLoginVisible(true)}
             />
-          </>
-        }
-        <Route path="/payment" element={<PaymentMethods />} />
-        <Route path="/favorites" element={<Favorites />} />
-        <Route path="/favourites" element={<Favorites />} />
+          }
+        />
+
+        {/* 💳 Métodos de pago */}
+        <Route
+          path="/payment"
+          element={<PaymentMethods isAdmin={isAdminUser(user)} />}
+        />
+
+        {/* ⭐ Favoritos */}
+        <Route
+          path="/favorites"
+          element={<Favorites user={user} onLoginClick={() => setLoginVisible(true)} />}
+        />
+
+        {/* 🛒 Productos */}
         <Route
           path="/products"
           element={
@@ -356,6 +322,8 @@ function App() {
             />
           }
         />
+
+        {/* 🎉 Promociones */}
         <Route
           path="/promotions"
           element={
@@ -369,11 +337,11 @@ function App() {
             />
           }
         />
+
+        {/* 🧾 Checkout */}
         <Route path="/checkout" element={<Checkout cartItems={cartItems} />} />
-        <Route
-          path="/payment"
-          element={<PaymentMethods isAdmin={isAdminUser(user)} />}
-        />
+
+        {/* 🧑‍💼 Admin - Pedidos */}
         <Route
           path="/admin/orders"
           element={
@@ -386,21 +354,8 @@ function App() {
             )
           }
         />
-        <Route
-          path="/favourites"
-          element={
-            <Favorites user={user} onLoginClick={() => setLoginVisible(true)} />
-          }
-        />
       </Routes>
-      <Routes>
-        <Route
-          path="/favourites"
-          element={
-            <Favorites user={user} onLoginClick={() => setLoginVisible(true)} />
-          }
-        />
-      </Routes>
+
       <Footer />
     </>
   );
