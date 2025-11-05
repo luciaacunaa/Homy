@@ -5,3 +5,4 @@ def test_obtener_imagenes_url(client):
     data = response.get_json()
     assert "image_url" in data
     assert isinstance(data["image_url"], str)
+
