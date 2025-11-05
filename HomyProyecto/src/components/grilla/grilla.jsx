@@ -13,6 +13,7 @@ const ProductList = ({
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [hiddenProducts, setHiddenProducts] = useState([]);
   // Favorites are stored per-user. If there's no user, favorites are empty
   const params = useParams();
   const location = useLocation();
@@ -96,7 +97,8 @@ const ProductList = ({
         categoryId
       )}`; // ajusta según tu backend
     } else {
-      url = "http://127.0.0.1:5000/products";
+      // usar el endpoint /api/products por consistencia
+      url = "http://127.0.0.1:5000/api/products";
     }
     fetch(url)
       .then((res) => {
@@ -104,7 +106,13 @@ const ProductList = ({
         return res.json();
       })
       .then((data) => {
-        let items = data || [];
+        // inspeccionar la forma de la respuesta para adaptarnos
+        console.log("loadProducts response:", data);
+        let items = [];
+        if (Array.isArray(data)) items = data;
+        else if (data && Array.isArray(data.products)) items = data.products;
+        else if (data && Array.isArray(data.items)) items = data.items;
+        else items = data || [];
         // si categoryId existe pero el endpoint devolvió items no filtrados, filtramos en cliente
         if (categoryId && Array.isArray(items) && items.length > 0) {
           const looksFiltered = items.every((it) => {
@@ -133,12 +141,18 @@ const ProductList = ({
           ...prod,
           id: prod.products_id || prod.id,
           name: prod.products_name || prod.name,
-          // si el backend devolvió image_url ya completo, úsalo;
-          // si viene vacío o null, lo dejaremos vacío y luego intentaremos
-          // obtenerlo desde /api/images/<id> en el cliente cuando se renderice
-          image_url: prod.image_url || "",
+          image_url: prod.image_url || prod.image || "",
         }));
-        setProducts(productosConId);
+
+        // eliminar duplicados por id (mantener el primero)
+        const seen = new Set();
+        const deduped = productosConId.filter((p) => {
+          if (!p.id) return false;
+          if (seen.has(p.id)) return false;
+          seen.add(p.id);
+          return true;
+        });
+        setProducts(deduped);
       })
       .catch((err) => {
         console.error("Error al traer productos:", err);
@@ -167,17 +181,29 @@ const ProductList = ({
             const res = await fetch(`http://127.0.0.1:5000/api/images/${p.id}`);
             if (!res.ok) return;
             const json = await res.json();
-            if (json && json.image_url) {
-              // si la URL viene relativa (ej: 'uploads/..'), convertir a absoluta
-              const url = json.image_url.startsWith("http")
-                ? json.image_url
-                : `http://127.0.0.1:5000/${json.image_url}`;
+            if (!json) return;
+
+            // posibles campos donde puede venir la URL
+            const candidate = json.image_url || json.url || json.path || json.data || json;
+            let imageUrl = null;
+
+            if (typeof candidate === "string") {
+              imageUrl = candidate;
+            } else if (candidate && typeof candidate === "object") {
+              // si viene objeto con campos conocidos
+              imageUrl = candidate.image_url || candidate.url || candidate.path || null;
+            }
+
+            if (imageUrl) {
+              // normalizar relativa -> absoluta
+              if (!imageUrl.startsWith("http")) {
+                imageUrl = imageUrl.replace(/^\/+/, "");
+                imageUrl = `http://127.0.0.1:5000/${imageUrl}`;
+              }
               const idx = updated.findIndex((u) => u.id === p.id);
-              if (idx !== -1)
-                updated[idx] = { ...updated[idx], image_url: url };
+              if (idx !== -1) updated[idx] = { ...updated[idx], image_url: imageUrl };
             }
           } catch (e) {
-            // ignore individual failures
             console.error("Error cargando imagen para", p.id, e);
           }
         })
@@ -196,9 +222,9 @@ const ProductList = ({
     setHiddenProducts((prev) => [...prev, id]);
   };
 
-  /*const visibleProducts = products.filter(
+  const visibleProducts = products.filter(
     (product) => !hiddenProducts.includes(product.id)
-  );*/
+  );
 
   return (
     <>
@@ -226,16 +252,16 @@ const ProductList = ({
               Reintentar
             </button>
           </div>
-        ) : products.length > 0 ? (
-          products.map((product) => (
+        ) : visibleProducts.length > 0 ? (
+          visibleProducts.map((product) => (
             <div key={product.id} className="product-card">
               {/* Mostrar la imagen si existe, con placeholder y onError */}
               <img
-                src={product.image_url || "/public/vite.svg"}
-                alt={product.name}
+                src={product.image_url || "/vite.svg"}
+                alt={product.name || product.products_name}
                 onError={(e) => {
                   // fallback en caso de error de carga
-                  e.currentTarget.src = "/public/vite.svg";
+                  e.currentTarget.src = "/vite.svg";
                 }}
                 style={{ width: "100%", height: 180, objectFit: "cover" }}
               />
@@ -272,7 +298,7 @@ const ProductList = ({
                 )}
               </div>
 
-              <p>{product.products_name}</p>
+              <p>{product.name || product.products_name}</p>
               <p>
                 <strong>Precio:</strong> ${product.price}
               </p>
