@@ -14,4 +14,4 @@ def test_contraseña_incorrecta(client):
 
     json_data = response.get_json()
     assert "error" in json_data
-    assert json_data["error"] == "Datos ingresados incorrectos"
+    assert json_data["error"] == "Credenciales incorrectas"

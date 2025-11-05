@@ -17,6 +17,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import Reviews from "./Reviews";
 import Favorites from "./Favorites";
 
+
 function App() {
   const navigate = useNavigate();
 

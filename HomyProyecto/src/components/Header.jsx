@@ -8,6 +8,7 @@ import UbicacionMapa from "./ubicacion";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { debounce } from "lodash";
+
 function PromocionesModal({ open, onClose, images }) {
   if (!open) return null;
   return (
@@ -125,7 +126,7 @@ export default function Header({
     };
   }, [showAccountMenu]);
 
-  // compute favorites count per-user from localStorage
+  
   useEffect(() => {
     const makeKey = (u) => {
       if (!u) return null;
@@ -166,7 +167,7 @@ export default function Header({
   const [showSearchResults, setShowSearchResults] = useState(false);
   const searchRef = useRef(null);
 
-  // Debounced search to avoid firing on every keystroke
+
   const doSearch = debounce((q) => {
     if (!q || q.trim() === "") {
       setSearchResults([]);
@@ -201,7 +202,6 @@ export default function Header({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showSearchResults]);
   useEffect(() => {
-    // fallback static categories if none provided from API
     if (!categories || categories.length === 0) {
       setCategories([
         { category_id: "oficina", category_name: "Oficina" },
@@ -592,3 +592,4 @@ export default function Header({
     </header>
   );
 }
+

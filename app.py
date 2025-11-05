@@ -8,6 +8,7 @@ from io import BytesIO
 import mercadopago   
 from functools import wraps
 
+
 # Agrega credenciales
 sdk = mercadopago.SDK("APP_USR-7798932195313209-100910-463a1fb5da375d86b110528f4d743463-2915372376")
 load_dotenv(".env/paty.env")  # Carga las variables de entorno desde el archivo .env
@@ -153,46 +154,40 @@ def list_categories(category_id):
 
 
 
-@app.route('/api/categoria_con_productos', methods=['GET']) #abril
+@app.route('/api/categoria_con_productos', methods=['GET'])  # abril
 def categoria_con_productos():
-   try:
-       # Establece la conexión a la base de datos
-       db = abrirConexion()  # Usa la función abrirConexion que ya tienes definida
-       cursor = db.cursor(dictionary=True)
-      
-       # Ejecuta la consulta SQL que une las categorías y los productos
-       cursor.execute("""
-          SELECT 
-             c.category_name, 
-             p.products_name
-           FROM 
-            intermediate i
-          INNER JOIN 
-             category c ON i.category_id = c.category_id
-          INNER JOIN 
-              products p ON i.products_id = p.products_id
-        ORDER BY 
-    c.category_name, p.products_name;
-;
-       """)
-      
-       # Obtén todos los resultados de la consulta
-       results = cursor.fetchall()
-      
-       # Cierra el cursor y la conexión a la base de datos
-       cursor.close()
-       db.close()
-      
-       # Si no se encontraron resultados
-       if not results:
-           return jsonify({"message": "No se encontro la categoria con productos"}), 404
-      
-       # Devuelve los resultados en formato JSON
-       return jsonify(results)
-  
-   except Exception as e:
-       # Maneja cualquier error y devuelve un mensaje adecuado
-       return jsonify({"error": str(e)}), 500
+    try:
+        # Establece la conexión a la base de datos
+        db = abrirConexion()
+        cursor = db.cursor(dictionary=True)
+        
+        # Ejecuta la consulta SQL que une las categorías y los productos
+        cursor.execute("""
+            SELECT 
+                c.category_name, 
+                p.products_name
+            FROM intermediate i
+            INNER JOIN category c ON i.category_id = c.category_id
+            INNER JOIN products p ON i.products_id = p.products_id
+            ORDER BY c.category_name, p.products_name;
+        """)
+        
+        # Obtén todos los resultados de la consulta
+        results = cursor.fetchall()
+        
+        cursor.close()
+        db.close()
+        
+        # Si no se encontraron resultados
+        if not results:
+            return jsonify({"message": "No se encontró ninguna categoría con productos"}), 404
+        
+    
+        return jsonify(results), 200
+
+    except Exception as e:
+        # Maneja cualquier error y devuelve un mensaje adecuado
+        return jsonify({"error": str(e)}), 500
 
 
 
