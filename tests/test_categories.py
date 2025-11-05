@@ -6,4 +6,3 @@ def test_lista_categories(client): #Test que lista todas las categorías
     if data:
         assert "category_id" in data[0]
         assert "category_name" in data[0]
-
