@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import Register from "../src/register/Register"; // ajustá la ruta si está en otra carpeta
+import Register from "../src/register/Register";
 
 // Mock del fetch para no hacer llamadas reales al backend
 global.fetch = jest.fn();
