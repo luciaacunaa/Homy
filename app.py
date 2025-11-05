@@ -212,26 +212,38 @@ def get_image(product_id):
     
 
 
-@app.route('/api/products', methods=['GET'])#ABI
+@app.route('/api/products', methods=['GET']) #abril, maryy
 def get_products():
     try:
-        cursor = g.cursor(dictionary=True)
+        db = abrirConexion()
+        cursor = db.cursor(dictionary=True)
 
-        # Traer productos y, si existe, la URL de la imagen
         query = """
-           SELECT * FROM products LEFT JOIN images ON products.products_id=images.products_id; 
+            SELECT 
+                p.products_id,
+                p.products_name,
+                p.price,
+                p.unit,
+                i.image_url
+            FROM products p
+            LEFT JOIN images i ON p.products_id = i.products_id;
         """
         cursor.execute(query)
-        products = cursor.fetchall()  # Esto debe ser una lista de diccionarios
+        products = cursor.fetchall()
         cursor.close()
+        db.close()
 
-        # Asegurarse de devolver un array incluso si no hay productos
-        if products is None:
-            products = []
+        # Si las imágenes están guardadas como nombre o ruta parcial, agregá el prefijo
+        for prod in products:
+            if prod['image_url']:
+                prod['image_url'] = f"http://127.0.0.1:5000/{prod['image_url']}"
 
-        return jsonify(products)  # Esto ya es un array JSON
+        return jsonify(products)
+
     except Exception as e:
-        return jsonify([])  # Devuelve array vacío si hay error
+        print("Error:", e)
+        return jsonify({"error": str(e)}), 500
+
 
 
 
@@ -414,6 +426,69 @@ def save_order():
 
     return jsonify({"message": "Pedido guardado correctamente"}), 201
 
+
+##luci
+@app.route('/api/payment', methods=['GET'])
+def list_bancos():
+    db = abrirConexion()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM payment;")
+    bancos = cursor.fetchall()
+    cursor.close()
+    return jsonify(bancos)
+##lo que hace es que llama todos los metodos de pago y las muestra.
+
+@app.route('/api/inventory', methods=['GET'])
+def get_inventory_status():
+    db = abrirConexion()
+    cursor = db.cursor(dictionary=True)
+
+    #obtiene el estado de los productos en inventario
+    cursor.execute("""
+        SELECT 
+            i.inventory_id, 
+            i.products_id, 
+            i.stock, 
+            i.location, 
+            i.status_id
+        FROM 
+            inventory i
+        INNER JOIN 
+            products p ON i.products_id = p.products_id;
+    """)
+    inventory = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    if not inventory:
+        return jsonify({'message': 'No hay productos en inventario'}), 404
+
+    return jsonify(inventory)
+
+@app.route('/api/status', methods=['GET'])
+def get_order_status():
+    db = abrirConexion()
+    cursor = db.cursor(dictionary=True)
+
+    #obteniene el estado del pedido y su descripción
+    cursor.execute("""
+        SELECT 
+            s.status_id, 
+            s.status_name, 
+            s.description, 
+            s.shipping_id, 
+            s.inventory_id
+        FROM 
+            status s;
+    """)
+    status_data = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    if not status_data:
+        return jsonify({'message': 'No hay estados de pedidos disponibles'}), 404
+
+    return jsonify(status_data)
 
 
 # SDK de Mercado Pago, PROBANDO MERCADOPAGO -- maryyy backend

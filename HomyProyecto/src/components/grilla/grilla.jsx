@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import { FaHeart, FaRegHeart } from 'react-icons/fa';
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import "./grilla.css";
 
-const ProductList = ({ addToCart, removeFromCart, cartItems, user, onLoginClick }) => {
+const ProductList = ({
+  addToCart,
+  removeFromCart,
+  cartItems,
+  user,
+  onLoginClick,
+}) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,7 +19,9 @@ const ProductList = ({ addToCart, removeFromCart, cartItems, user, onLoginClick 
 
   const makeKey = (u) => {
     if (!u) return null;
-    return `homy_favorites_${u.customers_email || u.email || u.customers_id || u.id}`;
+    return `homy_favorites_${
+      u.customers_email || u.email || u.customers_id || u.id
+    }`;
   };
 
   const favKey = makeKey(user);
@@ -47,13 +55,16 @@ const ProductList = ({ addToCart, removeFromCart, cartItems, user, onLoginClick 
       if (onLoginClick) onLoginClick();
       return;
     }
-    setFavorites(prev => {
-      const exists = prev.find(p => p.id === product.id);
+    setFavorites((prev) => {
+      const exists = prev.find((p) => p.id === product.id);
       if (exists) {
-        return prev.filter(p => p.id !== product.id);
+        return prev.filter((p) => p.id !== product.id);
       } else {
         // normalize product shape used by Favorites.jsx
-        const normalized = { ...product, name: product.name || product.products_name };
+        const normalized = {
+          ...product,
+          name: product.name || product.products_name,
+        };
         return [normalized, ...prev];
       }
     });
@@ -63,8 +74,8 @@ const ProductList = ({ addToCart, removeFromCart, cartItems, user, onLoginClick 
   const triggerAnimation = (e) => {
     const el = e.currentTarget;
     if (!el) return;
-    el.classList.add('animate');
-    setTimeout(() => el.classList.remove('animate'), 350);
+    el.classList.add("animate");
+    setTimeout(() => el.classList.remove("animate"), 350);
   };
 
   const loadProducts = () => {
@@ -77,9 +88,13 @@ const ProductList = ({ addToCart, removeFromCart, cartItems, user, onLoginClick 
 
     let url;
     if (q) {
-      url = `http://127.0.0.1:5000/api/products/search?query=${encodeURIComponent(q)}`;
+      url = `http://127.0.0.1:5000/api/products/search?query=${encodeURIComponent(
+        q
+      )}`;
     } else if (categoryId) {
-      url = `http://127.0.0.1:5000/api/products?category=${encodeURIComponent(categoryId)}`; // ajusta según tu backend
+      url = `http://127.0.0.1:5000/api/products?category=${encodeURIComponent(
+        categoryId
+      )}`; // ajusta según tu backend
     } else {
       url = "http://127.0.0.1:5000/products";
     }
@@ -93,11 +108,23 @@ const ProductList = ({ addToCart, removeFromCart, cartItems, user, onLoginClick 
         // si categoryId existe pero el endpoint devolvió items no filtrados, filtramos en cliente
         if (categoryId && Array.isArray(items) && items.length > 0) {
           const looksFiltered = items.every((it) => {
-            return (it.category_id && it.category_id === categoryId) || (it.category && it.category === categoryId) || (it.categories && Array.isArray(it.categories) && it.categories.includes(categoryId));
+            return (
+              (it.category_id && it.category_id === categoryId) ||
+              (it.category && it.category === categoryId) ||
+              (it.categories &&
+                Array.isArray(it.categories) &&
+                it.categories.includes(categoryId))
+            );
           });
           if (!looksFiltered) {
             items = items.filter((it) => {
-              return (it.category_id && it.category_id === categoryId) || (it.category && it.category === categoryId) || (it.categories && Array.isArray(it.categories) && it.categories.includes(categoryId));
+              return (
+                (it.category_id && it.category_id === categoryId) ||
+                (it.category && it.category === categoryId) ||
+                (it.categories &&
+                  Array.isArray(it.categories) &&
+                  it.categories.includes(categoryId))
+              );
             });
           }
         }
@@ -106,7 +133,10 @@ const ProductList = ({ addToCart, removeFromCart, cartItems, user, onLoginClick 
           ...prod,
           id: prod.products_id || prod.id,
           name: prod.products_name || prod.name,
-          image_url: prod.products_id ? `http://127.0.0.1:5000/image/${prod.products_id}` : prod.image_url || "",
+          // si el backend devolvió image_url ya completo, úsalo;
+          // si viene vacío o null, lo dejaremos vacío y luego intentaremos
+          // obtenerlo desde /api/images/<id> en el cliente cuando se renderice
+          image_url: prod.image_url || "",
         }));
         setProducts(productosConId);
       })
@@ -121,6 +151,45 @@ const ProductList = ({ addToCart, removeFromCart, cartItems, user, onLoginClick 
   useEffect(() => {
     loadProducts();
   }, [location.search, params?.categoryId]);
+
+  // Si algunos productos no tienen image_url, pedir la URL específica por id
+  useEffect(() => {
+    const missing = products.filter((p) => !p.image_url && p.id);
+    if (missing.length === 0) return;
+
+    let cancelled = false;
+
+    const fetchImages = async () => {
+      const updated = [...products];
+      await Promise.all(
+        missing.map(async (p) => {
+          try {
+            const res = await fetch(`http://127.0.0.1:5000/api/images/${p.id}`);
+            if (!res.ok) return;
+            const json = await res.json();
+            if (json && json.image_url) {
+              // si la URL viene relativa (ej: 'uploads/..'), convertir a absoluta
+              const url = json.image_url.startsWith("http")
+                ? json.image_url
+                : `http://127.0.0.1:5000/${json.image_url}`;
+              const idx = updated.findIndex((u) => u.id === p.id);
+              if (idx !== -1)
+                updated[idx] = { ...updated[idx], image_url: url };
+            }
+          } catch (e) {
+            // ignore individual failures
+            console.error("Error cargando imagen para", p.id, e);
+          }
+        })
+      );
+      if (!cancelled) setProducts(updated);
+    };
+
+    fetchImages();
+    return () => {
+      cancelled = true;
+    };
+  }, [products]);
 
   // función para ocultar un producto
   const handleHideProduct = (id) => {
@@ -139,30 +208,66 @@ const ProductList = ({ addToCart, removeFromCart, cartItems, user, onLoginClick 
 
       <div className="product-container">
         {loading ? (
-          <div style={{ textAlign: 'center' }}>Cargando productos...</div>
+          <div style={{ textAlign: "center" }}>Cargando productos...</div>
         ) : error ? (
-          <div style={{ textAlign: 'center', color: 'rgba(69, 187, 0, 1)' }}>
+          <div style={{ textAlign: "center", color: "rgba(69, 187, 0, 1)" }}>
             <p>Error cargando productos: {error}</p>
-            <button onClick={loadProducts} style={{ background: '#48601c', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 6, cursor: 'pointer' }}>Reintentar</button>
+            <button
+              onClick={loadProducts}
+              style={{
+                background: "#48601c",
+                color: "#fff",
+                border: "none",
+                padding: "8px 12px",
+                borderRadius: 6,
+                cursor: "pointer",
+              }}
+            >
+              Reintentar
+            </button>
           </div>
         ) : products.length > 0 ? (
           products.map((product) => (
             <div key={product.id} className="product-card">
-              {/* Mostrar la imagen si existe */}
+              {/* Mostrar la imagen si existe, con placeholder y onError */}
               <img
-                src={product.image_url}
+                src={product.image_url || "/public/vite.svg"}
                 alt={product.name}
-                
+                onError={(e) => {
+                  // fallback en caso de error de carga
+                  e.currentTarget.src = "/public/vite.svg";
+                }}
+                style={{ width: "100%", height: 180, objectFit: "cover" }}
               />
 
-              <div style={{ position: 'absolute', top: 10, right: 10 }}>
-                {favorites.find(f => f.id === product.id) ? (
-                  <span className="favorite-icon" onClick={(e) => { e.stopPropagation(); toggleFavorite(product); triggerAnimation(e); }}>
-                    <FaHeart className="heart-svg" style={{ color: 'red', cursor: 'pointer' }} />
+              <div style={{ position: "absolute", top: 10, right: 10 }}>
+                {favorites.find((f) => f.id === product.id) ? (
+                  <span
+                    className="favorite-icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(product);
+                      triggerAnimation(e);
+                    }}
+                  >
+                    <FaHeart
+                      className="heart-svg"
+                      style={{ color: "red", cursor: "pointer" }}
+                    />
                   </span>
                 ) : (
-                  <span className="favorite-icon" onClick={(e) => { e.stopPropagation(); toggleFavorite(product); triggerAnimation(e); }}>
-                    <FaRegHeart className="heart-svg" style={{ color: '#999', cursor: 'pointer' }} />
+                  <span
+                    className="favorite-icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(product);
+                      triggerAnimation(e);
+                    }}
+                  >
+                    <FaRegHeart
+                      className="heart-svg"
+                      style={{ color: "#999", cursor: "pointer" }}
+                    />
                   </span>
                 )}
               </div>
