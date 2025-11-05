@@ -217,26 +217,38 @@ def get_image(product_id):
     
 
 
-@app.route('/api/products', methods=['GET'])#ABI
+@app.route('/api/products', methods=['GET']) #abril, maryy
 def get_products():
     try:
-        cursor = g.cursor(dictionary=True)
+        db = abrirConexion()
+        cursor = db.cursor(dictionary=True)
 
-        # Traer productos y, si existe, la URL de la imagen
         query = """
-           SELECT * FROM products LEFT JOIN images ON products.products_id=images.products_id; 
+            SELECT 
+                p.products_id,
+                p.products_name,
+                p.price,
+                p.unit,
+                i.image_url
+            FROM products p
+            LEFT JOIN images i ON p.products_id = i.products_id;
         """
         cursor.execute(query)
-        products = cursor.fetchall()  # Esto debe ser una lista de diccionarios
+        products = cursor.fetchall()
         cursor.close()
+        db.close()
 
-        # Asegurarse de devolver un array incluso si no hay productos
-        if products is None:
-            products = []
+        # Si las imágenes están guardadas como nombre o ruta parcial, agregá el prefijo
+        for prod in products:
+            if prod['image_url']:
+                prod['image_url'] = f"http://127.0.0.1:5000/{prod['image_url']}"
 
-        return jsonify(products)  # Esto ya es un array JSON
+        return jsonify(products)
+
     except Exception as e:
-        return jsonify([])  # Devuelve array vacío si hay error
+        print("Error:", e)
+        return jsonify({"error": str(e)}), 500
+
 
 
 
