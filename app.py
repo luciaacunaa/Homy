@@ -33,7 +33,7 @@ def cerrarConexion(e=None):
 
 
 
-CORS(app)  # Habilita CORS para todas las rutas de todos los orígenes
+CORS (app, resources={r"/*": {"origins": "*"}}, supports_credentials=True) # Habilita CORS para todas las rutas de todos los orígenes
 app.teardown_appcontext(cerrarConexion)
 
 
