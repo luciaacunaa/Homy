@@ -192,23 +192,31 @@ def categoria_con_productos():
 
 
 
-@app.route('/api/images/<int:product_id>', methods=['GET']) ##ABRIL
+@app.route('/api/images/<int:product_id>', methods=['GET'])
 def get_image(product_id):
     try:
-        db = abrirConexion()  # Usa la función abrirConexion que ya tienes definida
+        db = abrirConexion()
         cursor = db.cursor(dictionary=True)
-        cursor.execute("SELECT image_url FROM images WHERE products_id = %s LIMIT 1", (str(product_id),))
+        cursor.execute("SELECT image_url FROM images WHERE products_id = %s", (product_id,))
         result = cursor.fetchone()
-        cerrarConexion()
-        #cursor.close()
+        cursor.close()
+        db.close()
 
-        if result is None:
-            return jsonify({"message": "Image not found"}), 404
-        return jsonify({"image_url": result["image_url"]}), 200
-            # return send_file(BytesIO(image_data), mimetype=mime_type)
-    
+        if not result or not result['image_url']:
+            return jsonify({'error': 'Image not found'}), 404
+
+        # Limpia cualquier barra al inicio del path
+        image_url = result['image_url'].lstrip('/')
+
+        # Si querés devolver la URL completa:
+        # full_url = f"https://tuservidor.com/{image_url}"
+        # return jsonify({'image_url': full_url})
+
+        # Si solo devolvés el path limpio:
+        return jsonify({'image_url': image_url})
+
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({'error': str(e)}), 500
     
 
 
@@ -239,9 +247,7 @@ def get_products():
                 prod['image_url'] = f"http://127.0.0.1:5000/{prod['image_url']}"
 
         return jsonify(products)
-
     except Exception as e:
-        print("Error:", e)
         return jsonify({"error": str(e)}), 500
 
 
@@ -489,6 +495,54 @@ def get_order_status():
         return jsonify({'message': 'No hay estados de pedidos disponibles'}), 404
 
     return jsonify(status_data)
+
+@app.route('/api/reviews', methods=['POST']) #maryyy
+def add_review():
+    #Guardar una nueva opinión
+    data = request.get_json()
+    customers_name = data.get('customers_name')
+    customers_email = data.get('customers_email')
+    rating = data.get('rating')
+    comment = data.get('comment')
+
+    if not customers_name or not comment:
+        return jsonify({"error": "Faltan datos obligatorios"}), 400
+
+    db = abrirConexion()
+    cursor = db.cursor()
+
+    try:
+        cursor.execute("""
+            INSERT INTO reviews (customers_name, customers_email, rating, comment)
+            VALUES (%s, %s, %s, %s);
+        """, (customers_name, customers_email, rating, comment))
+        db.commit()
+        review_id = cursor.lastrowid
+        cursor.close()
+        return jsonify({"message": "Opinión guardada correctamente", "review_id": review_id}), 201
+    except Exception as e:
+        db.rollback()
+        cursor.close()
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/reviews', methods=['GET'])
+def get_reviews():
+    """Devuelve todas las reseñas ordenadas por fecha (las más recientes primero)."""
+    db = abrirConexion()
+    cursor = db.cursor(dictionary=True)
+    try:
+        cursor.execute(
+            "SELECT review_id, customers_name, customers_email, rating, comment, created_at FROM reviews ORDER BY created_at DESC;"
+        )
+        reviews = cursor.fetchall()
+    except Exception as e:
+        cursor.close()
+        return jsonify({'error': str(e)}), 500
+    cursor.close()
+    # Devolver lista (puede estar vacía)
+    return jsonify(reviews or [])
+
 
 
 # SDK de Mercado Pago, PROBANDO MERCADOPAGO -- maryyy backend

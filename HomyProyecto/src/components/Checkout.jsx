@@ -19,6 +19,9 @@ const Checkout = ({ cartItems, setCartItems }) => {
     cvv: "",
   });
   const [error, setError] = useState("");
+  const [showDetails, setShowDetails] = useState(false);
+  const [orderDetails, setOrderDetails] = useState(null);
+  const [statuses, setStatuses] = useState([]);
 
   useEffect(() => {
     const totalCompra = cartItems.reduce(
@@ -27,6 +30,16 @@ const Checkout = ({ cartItems, setCartItems }) => {
     );
     setTotal(totalCompra);
   }, [cartItems]);
+
+  // obtener estados desde backend (para mostrar estado en detalles)
+  useEffect(() => {
+    let mounted = true;
+    fetch('http://127.0.0.1:5000/api/status')
+      .then(r => r.ok ? r.json() : [])
+      .then(data => { if (mounted) setStatuses(data || []); })
+      .catch(() => { /* ignore */ });
+    return () => { mounted = false };
+  }, []);
 
   const handlePayment = (e) => {
     e.preventDefault();
@@ -84,6 +97,8 @@ const Checkout = ({ cartItems, setCartItems }) => {
       };
       const prevOrders = JSON.parse(localStorage.getItem("orders")) || [];
       localStorage.setItem("orders", JSON.stringify([...prevOrders, newOrder]));
+      // guardar en estado para poder mostrar detalles inmediatamente
+      setOrderDetails(newOrder);
 
       // VACIAR carrito en estado y en localStorage
       if (typeof setCartItems === "function") {
@@ -107,6 +122,15 @@ const Checkout = ({ cartItems, setCartItems }) => {
         : paymentMethod === "efectivo"
         ? "Efectivo al recibir"
         : "Transferencia bancaria";
+    const openDetails = () => {
+      // obtener el último pedido guardado en localStorage (orders)
+      const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+      const last = orders.length ? orders[orders.length - 1] : null;
+      if (last) setOrderDetails(last);
+      setShowDetails(true);
+    };
+
+    const closeDetails = () => setShowDetails(false);
 
     return (
       <div className="checkout-container" style={{ textAlign: "center" }}>
@@ -118,12 +142,38 @@ const Checkout = ({ cartItems, setCartItems }) => {
         <p>Método: <b>{paymentMethod}</b> — {masked}</p>
         <p>Total abonado: <b>${total}</b></p>
 
-        <button
-          onClick={() => (window.location.href = "/products")}
-          className="confirm-btn"
-        >
-          Volver a la tienda
-        </button>
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 12 }}>
+          <button onClick={openDetails} className="confirm-btn">Detalles de la compra</button>
+          <button onClick={() => (window.location.href = "/products")} className="confirm-btn">Volver a la tienda</button>
+        </div>
+
+        {showDetails && (
+          <div className="modal-overlay" onClick={closeDetails}>
+            <div className="modal" onClick={e => e.stopPropagation()}>
+              <h3>Detalles de la compra</h3>
+              {orderDetails ? (
+                <div className="order-details">
+                  <p><strong>Comprador:</strong> {orderDetails.buyer.name} — {orderDetails.buyer.email}</p>
+                  <p><strong>Fecha:</strong> {orderDetails.date}</p>
+                  <p><strong>Método:</strong> {orderDetails.paymentMethod}</p>
+                  <p><strong>Total:</strong> ${orderDetails.total}</p>
+                  <h4>Productos</h4>
+                  <ul>
+                    {orderDetails.items.map((it, i) => (
+                      <li key={i}>{it.name} — ${Number(it.price)} x {it.quantity}</li>
+                    ))}
+                  </ul>
+                  <p><strong>Estado:</strong> { (orderDetails.status_name) || (statuses.length ? statuses[0].status_name : 'Enviado') }</p>
+                </div>
+              ) : (
+                <p>No se encontró el detalle del pedido guardado.</p>
+              )}
+              <div style={{ textAlign: 'right', marginTop: 12 }}>
+                <button onClick={closeDetails} className="confirm-btn">Cerrar</button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -146,7 +196,6 @@ const Checkout = ({ cartItems, setCartItems }) => {
       </button>
 
       <h2 className="checkout-title">Resumen de la compra</h2>
-
       <ul className="checkout-list">
         {cartItems.map((item, idx) => (
           <li key={idx}>

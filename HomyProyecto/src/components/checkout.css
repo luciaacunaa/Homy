@@ -24,6 +24,8 @@
   border-radius: 10px;
   box-shadow: 0 2px 16px 0 #0001;
   padding: 32px 24px;
+  /* Hacemos el contenedor relativo para que los elementos absolute queden dentro del recuadro */
+  position: relative;
 }
 
 .checkout-title {
@@ -59,3 +61,39 @@
   align-items: center;
   margin-top: 20px;
 }
+
+/* Botón de confirmación centrado dentro del formulario/recuadro */
+.confirm-btn {
+  display: block;
+  margin: 1rem auto 0 auto; /* centrar horizontalmente */
+  background: #48601c;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.confirm-btn:hover { background: #3b4f16; }
+
+/* Modal de detalles de la compra */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.modal {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  max-width: 520px;
+  width: 90%;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.3);
+}
+.modal h3 { margin-top: 0; }
+.order-details ul { list-style: none; padding: 0; }
+.order-details li { padding: 6px 0; border-bottom: 1px solid #eee; }
