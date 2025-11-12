@@ -37,60 +37,68 @@ const ProductList = ({ addToCart, removeFromCart, cartItems, user, onLoginClick 
   // ==============================
   // 🚀 Cargar productos e imágenes juntas
   // ==============================
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+ useEffect(() => {
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        // 1️⃣ Traer productos
-        const resProd = await fetch("http://127.0.0.1:5000/api/products", { mode: "cors" });
-        if (!resProd.ok) throw new Error(`HTTP ${resProd.status}`);
-        const data = await resProd.json();
+      // 1️⃣ Traer productos
+      const resProd = await fetch("http://127.0.0.1:5000/api/products", { mode: "cors" });
+      if (!resProd.ok) throw new Error(`HTTP ${resProd.status}`);
+      const data = await resProd.json();
 
-        const items = Array.isArray(data) ? data : data.products || [];
-        let cleaned = items.map((prod) => ({
-          id: prod.products_id || prod.id,
-          name: prod.products_name || prod.name,
-          price: prod.price || 0,
-        }));
-
-        // 2️⃣ Quitar duplicados por ID
-        cleaned = cleaned.filter(
-          (p, index, self) => index === self.findIndex((obj) => obj.id === p.id)
-        );
-
-        // 3️⃣ Traer imágenes para cada producto (esperar antes de renderizar)
-        const withImages = await Promise.all(
-          cleaned.map(async (prod) => {
-            try {
-              const resImg = await fetch(`http://127.0.0.1:5000/api/images/${prod.id}`, { mode: "cors" });
-              if (!resImg.ok) return prod;
-              const json = await resImg.json();
-              const url = json.image_url || json.url || null;
-              if (url) {
-                prod.image_url = url.startsWith("http")
-                  ? url
-                  : `http://127.0.0.1:5000/${url.replace(/^\/+/, "")}`;
-              }
-              return prod;
-            } catch {
-              return prod;
+      // 2️⃣ Normalizar productos (usamos el id correcto)
+      let items = (Array.isArray(data) ? data : data.products || []).map((prod) => ({
+        id: prod.products_id || prod.id,
+        name: prod.products_name || prod.name,
+        price: prod.price || 0,
+      }));
+      
+      // 3️⃣ Quitar duplicados simples
+      const seen = new Set();
+      items = items.filter((p) => {
+        if (seen.has(p.id)) return false;
+        seen.add(p.id);
+        return true;
+      });
+      
+      // 4️⃣ Filtrar IDs no deseados (solo lo esencial)
+      items = items.filter((p) => ![ 95, 112, 128].includes(p.id));
+      
+      console.log(items)
+      // 5️⃣ Traer imagen correspondiente (mismo id)
+      const withImages = await Promise.all(
+        items.map(async (prod) => {
+          try {
+            const resImg = await fetch(`http://127.0.0.1:5000/api/images/${prod.id}`, { mode: "cors" });
+            if (!resImg.ok) return prod;
+            const json = await resImg.json();
+            const url = json.image_url || json.url || null;
+            if (url) {
+              prod.image_url = url.startsWith("http")
+                ? url
+                : `http://127.0.0.1:5000/${url.replace(/^\/+/, "")}`;
             }
-          })
-        );
+            return prod;
+          } catch {
+            return prod;
+          }
+        })
+      );
 
-        setProducts(withImages);
-      } catch (err) {
-        console.error("Error al cargar productos:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+      setProducts(withImages);
+    } catch (err) {
+      console.error("Error al cargar productos:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    loadData();
-  }, []);
+  loadData();
+}, []);
+
 
   // ==============================
   // 🛒 Renderizado
@@ -107,15 +115,12 @@ const ProductList = ({ addToCart, removeFromCart, cartItems, user, onLoginClick 
           <div className="product-card" key={product.id}>
             <div className="image-container">
               <img
-                src={product.image_url || "/vite.svg"}
+                src={product.image_url || "product_not_found.png"}
                 alt={product.name}
-                onError={(e) => (e.currentTarget.src = "/vite.svg")}
+                onError={(e) => (e.currentTarget.src = "/product_not_found.png")}
                 style={{ width: "100%", height: 180, objectFit: "cover" }}
               />
-              <button
-                className="fav-button"
-                onClick={() => toggleFavorite(product)}
-              >
+              <button className="fav-button" onClick={() => toggleFavorite(product)}>
                 {isFav ? <FaHeart color="red" /> : <FaRegHeart color="#888" />}
               </button>
             </div>
