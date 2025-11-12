@@ -163,13 +163,13 @@ def categoria_con_productos():
         
         # Ejecuta la consulta SQL que une las categorías y los productos
         cursor.execute("""
-            SELECT 
-                c.category_name, 
-                p.products_name
-            FROM intermediate i
-            INNER JOIN category c ON i.category_id = c.category_id
-            INNER JOIN products p ON i.products_id = p.products_id
-            ORDER BY c.category_name, p.products_name;
+           SELECT 
+                 p.products_id,
+                 p.products_name,
+            c.category_name
+                FROM products p
+                JOIN category c
+            ON p.category_id = c.category_id; 
         """)
         
         # Obtén todos los resultados de la consulta
@@ -197,27 +197,63 @@ def get_image(product_id):
     try:
         db = abrirConexion()
         cursor = db.cursor(dictionary=True)
+        
+        # Ejecuta la consulta
         cursor.execute("SELECT image_url FROM images WHERE products_id = %s", (product_id,))
         result = cursor.fetchone()
+
+        # Limpieza de resultados pendientes (soluciona "Unread result found")
+        cursor.fetchall()  # Limpia cualquier fila restante aunque no haya más
         cursor.close()
         db.close()
 
-        if not result or not result['image_url']:
+        # Si no hay resultado
+        if not result or not result.get('image_url'):
             return jsonify({'error': 'Image not found'}), 404
 
-        # Limpia cualquier barra al inicio del path
+        # Limpia cualquier barra inicial del path
         image_url = result['image_url'].lstrip('/')
 
-        # Si querés devolver la URL completa:
-        # full_url = f"https://tuservidor.com/{image_url}"
-        # return jsonify({'image_url': full_url})
-
-        # Si solo devolvés el path limpio:
-        return jsonify({'image_url': image_url})
+        # Devuelve solo el path limpio
+        return jsonify({'image_url': image_url}), 200
 
     except Exception as e:
+        # En caso de error, devuelve el mensaje para debug
         return jsonify({'error': str(e)}), 500
+
     
+@app.route('/api/products/category/<int:category_id>', methods=['GET']) #abril
+def get_products_by_category(category_id):
+    try:
+        db = abrirConexion()
+        cursor = db.cursor(dictionary=True)
+        query = """
+         SELECT 
+                 p.products_id,
+                 p.products_name,
+            c.category_name
+                FROM products p
+                JOIN category c
+            ON p.category_id = c.category_id; 
+        """
+        cursor.execute(query, (category_id,))
+        products = cursor.fetchall()
+        cursor.close()
+        db.close()
+
+        for prod in products:
+            if prod['image_url']:
+                prod['image_url'] = f"http://127.0.0.1:5000/{prod['image_url']}"
+
+        if not products:
+            return jsonify({"message": "No hay productos en esta categoría"}), 404
+
+        return jsonify(products), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
 
 
 @app.route('/api/products', methods=['GET']) #abril, maryy
