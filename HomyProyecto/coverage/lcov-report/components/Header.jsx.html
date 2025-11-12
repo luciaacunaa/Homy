@@ -657,7 +657,8 @@
 <a name='L592'></a><a href='#L592'>592</a>
 <a name='L593'></a><a href='#L593'>593</a>
 <a name='L594'></a><a href='#L594'>594</a>
-<a name='L595'></a><a href='#L595'>595</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L595'></a><a href='#L595'>595</a>
+<a name='L596'></a><a href='#L596'>596</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -668,6 +669,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -860,7 +862,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1222,6 +1223,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1261,6 +1263,7 @@ import UbicacionMapa from "./ubicacion";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { debounce } from "lodash";
+&nbsp;
 function <span class="fstat-no" title="function not covered" >PromocionesModal(</span>{ open, onClose, images }) {
 <span class="cstat-no" title="statement not covered" >  if (!open) <span class="cstat-no" title="statement not covered" >return null;</span></span>
 <span class="cstat-no" title="statement not covered" >  return (</span>
@@ -1378,7 +1381,7 @@ export default function <span class="fstat-no" title="function not covered" >Hea
     };
   }, [showAccountMenu]);
 &nbsp;
-  // compute favorites count per-user from localStorage
+  
 <span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
     const makeKey = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(u</span>) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      if (!u) <span class="cstat-no" title="statement not covered" >return null;</span></span>
@@ -1419,7 +1422,7 @@ export default function <span class="fstat-no" title="function not covered" >Hea
   const [showSearchResults, setShowSearchResults] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
   const searchRef = <span class="cstat-no" title="statement not covered" >useRef(null);</span>
 &nbsp;
-  // Debounced search to avoid firing on every keystroke
+&nbsp;
   const doSearch = <span class="cstat-no" title="statement not covered" >debounce(<span class="fstat-no" title="function not covered" >(q</span>) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    if (!q || q.trim() === "") {</span>
 <span class="cstat-no" title="statement not covered" >      setSearchResults([]);</span>
@@ -1454,7 +1457,6 @@ export default function <span class="fstat-no" title="function not covered" >Hea
 <span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >document.removeEventListener("mousedown", handleClickOutside);</span></span>
   }, [showSearchResults]);
 <span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
-    // fallback static categories if none provided from API
 <span class="cstat-no" title="statement not covered" >    if (!categories || categories.length === 0) {</span>
 <span class="cstat-no" title="statement not covered" >      setCategories([</span>
         { category_id: "oficina", category_name: "Oficina" },
@@ -1845,6 +1847,7 @@ export default function <span class="fstat-no" title="function not covered" >Hea
     &lt;/header&gt;
   );
 }
+&nbsp;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1852,7 +1855,7 @@ export default function <span class="fstat-no" title="function not covered" >Hea
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-10-30T12:55:53.289Z
+                at 2025-11-12T12:14:54.887Z
             </div>
         <script src="../prettify.js"></script>
         <script>
