@@ -35,7 +35,7 @@ const ProductList = ({ addToCart, removeFromCart, cartItems, user, onLoginClick 
   };
 
   // ==============================
-  // 🚀 Cargar productos e imágenes juntas
+  // Cargar productos e imágenes juntas
   // ==============================
   useEffect(() => {
     const loadData = async () => {

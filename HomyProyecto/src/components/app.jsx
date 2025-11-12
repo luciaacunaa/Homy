@@ -16,6 +16,8 @@ import Footer from "../components/Footer";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import Reviews from "./Reviews";
 import Favorites from "./Favorites";
+import CategoryProducts from "../components/CategoryProducts";
+
 
 
 function App() {
