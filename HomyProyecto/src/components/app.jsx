@@ -296,10 +296,14 @@ function App() {
               cartItems={cartItems}
               user={user}
               onLoginClick={() => setLoginVisible(true)}
+          
             />
+            
           }
+          
         />
-
+        <Route path="/categorias" element={<CategoryProducts   />} />
+        
         {/* 💳 Métodos de pago */}
         <Route
           path="/payment"
