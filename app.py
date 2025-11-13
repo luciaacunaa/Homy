@@ -164,12 +164,16 @@ def categoria_con_productos():
         # Ejecuta la consulta SQL que une las categorías y los productos
         cursor.execute("""
            SELECT 
-                 p.products_id,
-                 p.products_name,
-            c.category_name
-                FROM products p
-                JOIN category c
-            ON p.category_id = c.category_id; 
+                c.category_id,
+                c.category_name,
+                p.products_id,
+                p.products_name,
+                p.price,
+                i.image_url
+            FROM category c
+            LEFT JOIN products p ON p.category_id = c.category_id
+            LEFT JOIN images i ON p.products_id = i.products_id
+            ORDER BY c.category_name ASC, p.products_name ASC;
         """)
         
         # Obtén todos los resultados de la consulta
@@ -188,6 +192,58 @@ def categoria_con_productos():
     except Exception as e:
         # Maneja cualquier error y devuelve un mensaje adecuado
         return jsonify({"error": str(e)}), 500
+
+
+
+@app.route('/api/categorias', methods=['GET'])
+def obtener_categorias_con_productos():
+    try:
+        db = abrirConexion()
+        cursor = db.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT 
+                c.category_id,
+                c.category_name,
+                p.products_id,
+                p.products_name,
+                p.price,
+                i.image_url
+            FROM category c
+            LEFT JOIN products p ON p.category_id = c.category_id
+            LEFT JOIN images i ON p.products_id = i.products_id
+            ORDER BY c.category_name ASC, p.products_name ASC;
+        """)
+
+        data = cursor.fetchall()
+
+        # Agregar URL completa a las imágenes (opcional)
+        for item in data:
+            if item.get('image_url'):
+                item['image_url'] = f"http://127.0.0.1:5000/{item['image_url']}"
+
+        cursor.close()
+        db.close()
+        return jsonify(data), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
